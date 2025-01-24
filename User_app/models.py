@@ -24,7 +24,7 @@ from django.db import models
 #         return self.username
     
 class Employer_Profile(AbstractBaseUser):
-    employer_id = models.AutoField(primary_key=True)
+    employer_id = models.CharField(max_length=255, primary_key=True)
     employer_name = models.CharField(max_length=100,default="ABS")
     email = models.EmailField(unique=True,default="rtt@gmail.com")
     username = models.CharField(max_length=100, unique=True,default="USN")
@@ -429,11 +429,12 @@ class company_details(models.Model):
 #     garid= models.CharField(max_length=255)
 #     cid = models.IntegerField()
 #     eeid= models.IntegerField()
-#     state= models.CharField(max_length=255)
 #     case_id= models.CharField(max_length=255, null=True, blank=True)
-#     sdu= models.CharField(max_length=255, null=True, blank=True)
+#     state= models.CharField(max_length=255)
 #     type= models.CharField(max_length=255)
+#     sdu= models.CharField(max_length=255, null=True, blank=True)
 #     start_date= models.DateField(max_length=255, null=True, blank=True)
 #     end_date= models.DateField(max_length=255, null=True, blank=True)
 #     amount= models.DecimalField(max_length=255)
-#     arrear_greater_than_12_weeks= models.DecimalField(max_length=255)
+#     arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
+#     arrear_amount= models.DecimalField(max_length=255)
