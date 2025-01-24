@@ -425,14 +425,15 @@ class company_details(models.Model):
     location = models.CharField(max_length=255, null=True, blank=True)
 
 #garnishment_order_table
-class garnishment_order(models.Model):
-    cid = models.IntegerField()
-    eeid= models.IntegerField()
-    state= models.CharField(max_length=255)
-    case_id= models.CharField(max_length=255, null=True, blank=True)
-    sdu= models.CharField(max_length=255, null=True, blank=True)
-    type= models.CharField(max_length=255)
-    start_date= models.DateField(max_length=255, null=True, blank=True)
-    end_date= models.DateField(max_length=255, null=True, blank=True)
-    amount= models.DecimalField(max_length=255)
-
+# class garnishment_order(models.Model):
+#     garid= models.CharField(max_length=255)
+#     cid = models.IntegerField()
+#     eeid= models.IntegerField()
+#     state= models.CharField(max_length=255)
+#     case_id= models.CharField(max_length=255, null=True, blank=True)
+#     sdu= models.CharField(max_length=255, null=True, blank=True)
+#     type= models.CharField(max_length=255)
+#     start_date= models.DateField(max_length=255, null=True, blank=True)
+#     end_date= models.DateField(max_length=255, null=True, blank=True)
+#     amount= models.DecimalField(max_length=255)
+#     arrear_greater_than_12_weeks= models.DecimalField(max_length=255)

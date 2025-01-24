@@ -1165,6 +1165,651 @@ from User_app.models import Employee_Detail
 import pandas as pd
 import io
 
+# @csrf_exempt
+# def import_employees_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']  # Uploaded file
+#         file_name = file.name  # Get the name of the uploaded file
+#         updated_employees = []
+#         added_employees = []
+
+#         try:
+#             # Handle file formats
+#             if file_name.endswith('.csv'):
+#                 df = pd.read_csv(file)
+#             elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+#                 df = pd.read_excel(file)
+#             else:
+#                 return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+
+#             # Process the data from DataFrame
+#             for _, row in df.iterrows():
+#                 # Check if the employee exists
+#                 employee = Employee_Detail.objects.filter(ee_id=row['ee_id']).first()
+
+#                 if employee:
+#                     # Detect changes in employee data
+#                     has_changes = (
+#                         employee.cid != row['cid'] or
+#                         employee.age != int(row['age']) or
+#                         employee.social_security_number != row['social_security_number'] or
+#                         employee.blind != (str(row['blind']).lower() == 'true') or
+#                         employee.home_state != row['home_state'] or
+#                         employee.work_state != row['work_state'] or
+#                         employee.gender != row.get('gender', None) or
+#                         employee.pay_period != row['pay_period'] or
+#                         employee.number_of_exemptions != int(row['number_of_exemptions']) or
+#                         employee.filing_status != row['filing_status'] or
+#                         employee.marital_status != row['marital_status'] or
+#                         employee.number_of_student_default_loan != int(row['number_of_student_default_loan']) or
+#                         employee.support_second_family != (str(row['support_second_family']).lower() == 'true') or
+#                         employee.spouse_age != int(row.get('spouse_age', 0)) or
+#                         employee.is_spouse_blind != (str(row.get('is_spouse_blind', '')).lower() == 'true')
+#                     )
+
+#                     if has_changes:
+#                         # Update employee details
+#                         employee.cid = row['cid']
+#                         employee.age = int(row['age'])
+#                         employee.social_security_number = row['social_security_number']
+#                         employee.blind = str(row['blind']).lower() == 'true'
+#                         employee.home_state = row['home_state']
+#                         employee.work_state = row['work_state']
+#                         employee.gender = row.get('gender', None)
+#                         employee.pay_period = row['pay_period']
+#                         employee.number_of_exemptions = int(row['number_of_exemptions'])
+#                         employee.filing_status = row['filing_status']
+#                         employee.marital_status = row['marital_status']
+#                         employee.number_of_student_default_loan = int(row['number_of_student_default_loan'])
+#                         employee.support_second_family = str(row['support_second_family']).lower() == 'true'
+#                         employee.spouse_age = int(row.get('spouse_age', 0))
+#                         employee.is_spouse_blind = str(row.get('is_spouse_blind', '')).lower() == 'true'
+#                         employee.save()
+#                         updated_employees.append(employee.ee_id)
+#                 else:
+#                     # Add new employee
+#                     Employee_Detail.objects.create(
+#                         ee_id=row['ee_id'],
+#                         cid=row['cid'],
+#                         age=int(row['age']),
+#                         social_security_number=row['social_security_number'],
+#                         blind=str(row['blind']).lower() == 'true',
+#                         home_state=row['home_state'],
+#                         work_state=row['work_state'],
+#                         gender=row.get('gender', None),
+#                         pay_period=row['pay_period'],
+#                         number_of_exemptions=int(row['number_of_exemptions']),
+#                         filing_status=row['filing_status'],
+#                         marital_status=row['marital_status'],
+#                         number_of_student_default_loan=int(row['number_of_student_default_loan']),
+#                         support_second_family=str(row['support_second_family']).lower() == 'true',
+#                         spouse_age=int(row.get('spouse_age', 0)),
+#                         is_spouse_blind=str(row.get('is_spouse_blind', '')).lower() == 'true'
+#                     )
+#                     added_employees.append(row['ee_id'])
+
+#             # Prepare response
+#             response_data = []
+#             if added_employees:
+#                 response_data.append({
+#                     'message': 'Employee(s) imported successfully',
+#                     'added_employees': added_employees
+#                 })
+#             if updated_employees:
+#                 response_data.append({
+#                     'message': 'Employee details updated successfully',
+#                     'updated_employees': updated_employees
+#                 })
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+#new logic for data insertation in the employee table
+# @csrf_exempt
+# def import_employees_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']  # Uploaded file
+#         file_name = file.name  # Get the name of the uploaded file
+#         updated_employees = []
+#         added_employees = []
+#         no_changes = []
+
+#         try:
+#             # Handle file formats
+#             if file_name.endswith('.csv'):
+#                 df = pd.read_csv(file)
+#             elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+#                 df = pd.read_excel(file)
+#             else:
+#                 return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+
+#             # Process the data from DataFrame
+#             for _, row in df.iterrows():
+#                 # Check if the employee exists
+#                 employee = Employee_Detail.objects.filter(ee_id=row['ee_id']).first()
+
+#                 if employee:
+#                     # Detect changes in employee data
+#                     has_changes = (
+#                         employee.cid != row['cid'] or
+#                         employee.age != int(row['age']) or
+#                         employee.social_security_number != row['social_security_number'] or
+#                         employee.blind != (str(row['blind']).lower() == 'true') or
+#                         employee.home_state != row['home_state'] or
+#                         employee.work_state != row['work_state'] or
+#                         employee.gender != row.get('gender', None) or
+#                         employee.pay_period != row['pay_period'] or
+#                         employee.number_of_exemptions != int(row['number_of_exemptions']) or
+#                         employee.filing_status != row['filing_status'] or
+#                         employee.marital_status != row['marital_status'] or
+#                         employee.number_of_student_default_loan != int(row['number_of_student_default_loan']) or
+#                         employee.support_second_family != (str(row['support_second_family']).lower() == 'true') or
+#                         employee.spouse_age != int(row.get('spouse_age', 0)) or
+#                         employee.is_spouse_blind != (str(row.get('is_spouse_blind', '')).lower() == 'true')
+#                     )
+
+#                     if has_changes:
+#                         # Update employee details
+#                         employee.cid = row['cid']
+#                         employee.age = int(row['age'])
+#                         employee.social_security_number = row['social_security_number']
+#                         employee.blind = str(row['blind']).lower() == 'true'
+#                         employee.home_state = row['home_state']
+#                         employee.work_state = row['work_state']
+#                         employee.gender = row.get('gender', None)
+#                         employee.pay_period = row['pay_period']
+#                         employee.number_of_exemptions = int(row['number_of_exemptions'])
+#                         employee.filing_status = row['filing_status']
+#                         employee.marital_status = row['marital_status']
+#                         employee.number_of_student_default_loan = int(row['number_of_student_default_loan'])
+#                         employee.support_second_family = str(row['support_second_family']).lower() == 'true'
+#                         employee.spouse_age = int(row.get('spouse_age', 0))
+#                         employee.is_spouse_blind = str(row.get('is_spouse_blind', '')).lower() == 'true'
+#                         employee.save()
+#                         updated_employees.append(employee.ee_id)
+#                     else:
+#                         #No_changes_detected
+#                         no_changes.append(employee.ee_id)
+#                 else:
+#                     # Add new employee
+#                     Employee_Detail.objects.create(
+#                         ee_id=row['ee_id'],
+#                         cid=row['cid'],
+#                         age=int(row['age']),
+#                         social_security_number=row['social_security_number'],
+#                         blind=str(row['blind']).lower() == 'true',
+#                         home_state=row['home_state'],
+#                         work_state=row['work_state'],
+#                         gender=row.get('gender', None),
+#                         pay_period=row['pay_period'],
+#                         number_of_exemptions=int(row['number_of_exemptions']),
+#                         filing_status=row['filing_status'],
+#                         marital_status=row['marital_status'],
+#                         number_of_student_default_loan=int(row['number_of_student_default_loan']),
+#                         support_second_family=str(row['support_second_family']).lower() == 'true',
+#                         spouse_age=int(row.get('spouse_age', 0)),
+#                         is_spouse_blind=str(row.get('is_spouse_blind', '')).lower() == 'true'
+#                     )
+#                     added_employees.append(row['ee_id'])
+
+#             # Prepare response
+#             response_data = []
+#             if added_employees:
+#                 response_data.append({
+#                     'message': 'Employee(s) imported successfully',
+#                     'added_employees': added_employees
+#                 })
+#             if updated_employees:
+#                 response_data.append({
+#                     'message': 'Employee details updated successfully',
+#                     'updated_employees': updated_employees
+#                 })
+#             if no_changes:
+#                 response_data.append({
+#                     'message': 'No changes detected for existing employees',
+#                     'unchanged_employees': no_changes
+#                 })
+
+#             # Check if no data was added, updated, or unchanged
+#             if not added_employees and not updated_employees and not no_changes:
+#                 return JsonResponse({'message': 'No data was processed.'}, status=200)
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+#update logic where the data is actually updated
+# @csrf_exempt
+# def import_employees_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']  # Uploaded file
+#         file_name = file.name  # Get the name of the uploaded file
+#         updated_employees = []
+#         added_employees = []
+
+#         try:
+#             # Handle file formats
+#             if file_name.endswith('.csv'):
+#                 df = pd.read_csv(file)
+#             elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+#                 df = pd.read_excel(file)
+#             else:
+#                 return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+
+#             # Process the data from DataFrame
+#             for _, row in df.iterrows():
+#                 # Check if the employee exists
+#                 employee = Employee_Detail.objects.filter(ee_id=row['ee_id']).first()
+
+#                 if employee:
+#                     # Detect changes in employee data
+#                     has_changes = False
+#                     fields_to_update = {}
+
+#                     # Compare fields and add to update list if changed
+#                     if employee.cid != row['cid']:
+#                         fields_to_update['cid'] = row['cid']
+#                     if employee.age != int(row['age']):
+#                         fields_to_update['age'] = int(row['age'])
+#                     if employee.social_security_number != row['social_security_number']:
+#                         fields_to_update['social_security_number'] = row['social_security_number']
+#                     if employee.blind != (str(row['blind']).lower() == 'true'):
+#                         fields_to_update['blind'] = str(row['blind']).lower() == 'true'
+#                     if employee.home_state != row['home_state']:
+#                         fields_to_update['home_state'] = row['home_state']
+#                     if employee.work_state != row['work_state']:
+#                         fields_to_update['work_state'] = row['work_state']
+#                     if employee.gender != row.get('gender', None):
+#                         fields_to_update['gender'] = row.get('gender', None)
+#                     if employee.pay_period != row['pay_period']:
+#                         fields_to_update['pay_period'] = row['pay_period']
+#                     if employee.number_of_exemptions != int(row['number_of_exemptions']):
+#                         fields_to_update['number_of_exemptions'] = int(row['number_of_exemptions'])
+#                     if employee.filing_status != row['filing_status']:
+#                         fields_to_update['filing_status'] = row['filing_status']
+#                     if employee.marital_status != row['marital_status']:
+#                         fields_to_update['marital_status'] = row['marital_status']
+#                     if employee.number_of_student_default_loan != int(row['number_of_student_default_loan']):
+#                         fields_to_update['number_of_student_default_loan'] = int(row['number_of_student_default_loan'])
+#                     if employee.support_second_family != (str(row['support_second_family']).lower() == 'true'):
+#                         fields_to_update['support_second_family'] = str(row['support_second_family']).lower() == 'true'
+#                     if employee.spouse_age != int(row.get('spouse_age', 0)):
+#                         fields_to_update['spouse_age'] = int(row.get('spouse_age', 0))
+#                     if employee.is_spouse_blind != (str(row.get('is_spouse_blind', '')).lower() == 'true'):
+#                         fields_to_update['is_spouse_blind'] = str(row.get('is_spouse_blind', '')).lower() == 'true'
+
+#                     # Update only if changes exist
+#                     if fields_to_update:
+#                         has_changes = True
+#                         for field, value in fields_to_update.items():
+#                             setattr(employee, field, value)
+#                         employee.save()
+                    
+#                     if has_changes:
+#                         updated_employees.append(employee.ee_id)
+#                 else:
+#                     # Add new employee
+#                     Employee_Detail.objects.create(
+#                         ee_id=row['ee_id'],
+#                         cid=row['cid'],
+#                         age=int(row['age']),
+#                         social_security_number=row['social_security_number'],
+#                         blind=str(row['blind']).lower() == 'true',
+#                         home_state=row['home_state'],
+#                         work_state=row['work_state'],
+#                         gender=row.get('gender', None),
+#                         pay_period=row['pay_period'],
+#                         number_of_exemptions=int(row['number_of_exemptions']),
+#                         filing_status=row['filing_status'],
+#                         marital_status=row['marital_status'],
+#                         number_of_student_default_loan=int(row['number_of_student_default_loan']),
+#                         support_second_family=str(row['support_second_family']).lower() == 'true',
+#                         spouse_age=int(row.get('spouse_age', 0)),
+#                         is_spouse_blind=str(row.get('is_spouse_blind', '')).lower() == 'true'
+#                     )
+#                     added_employees.append(row['ee_id'])
+
+#             # Prepare response
+#             response_data = {}
+#             if updated_employees:
+#                 response_data['updated_employees'] = updated_employees
+#             if added_employees:
+#                 response_data['added_employees'] = added_employees
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+#above code is to see only the emp where the data is updated
+#new code for no updates
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from User_app.models import Employee_Detail  # Import your Employee_Detail model
+# from django.core.files.storage import default_storage
+# import csv
+# import pandas as pd
+
+# @csrf_exempt
+# def import_employees_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']
+#         file_path = default_storage.save(file.name, file)  # Temporarily save the file
+#         updated_employees = []
+#         added_employees = []
+
+#         try:
+#             # Determine the file type
+#             if file.name.endswith('.csv'):
+#                 # Process CSV file
+#                 with open(file_path, 'r') as csvfile:
+#                     reader = csv.DictReader(csvfile)
+#                     data = list(reader)
+#             elif file.name.endswith(('.xls', '.xlsx')):
+#                 # Process Excel file
+#                 df = pd.read_excel(file_path)
+#                 data = df.to_dict(orient='records')  # Convert to list of dictionaries
+#             else:
+#                 return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
+
+#             # Process each row
+#             for row in data:
+#                 try:
+#                     # Retrieve the existing employee (if any)
+#                     employee = Employee_Detail.objects.get(ee_id=row['ee_id']) 
+
+#                     # Check if any field differs from the incoming data
+#                     has_changes = False
+#                     for field_name in [
+#                         'cid', 'age', 'social_security_number', 'blind', 'home_state', 'work_state',
+#                         'gender', 'pay_period', 'number_of_exemptions', 'filing_status', 'marital_status',
+#                         'number_of_student_default_loan', 'support_second_family', 'spouse_age', 'is_spouse_blind'
+#                     ]: 
+#                         if getattr(employee, field_name) != row[field_name]:
+#                             has_changes = True
+#                             break
+
+#                     if has_changes:
+#                         # Update the employee record
+#                         employee.cid = row['cid']
+#                         employee.age = row['age']
+#                         employee.social_security_number = row['social_security_number']
+#                         employee.blind = row['blind'] 
+#                         employee.home_state = row['home_state']
+#                         employee.work_state = row['work_state']
+#                         employee.gender = row['gender']
+#                         employee.pay_period = row['pay_period']
+#                         employee.number_of_exemptions = row['number_of_exemptions']
+#                         employee.filing_status = row['filing_status']
+#                         employee.marital_status = row['marital_status']
+#                         employee.number_of_student_default_loan = row['number_of_student_default_loan']
+#                         employee.support_second_family = row['support_second_family']
+#                         employee.spouse_age = row['spouse_age']
+#                         employee.is_spouse_blind = row['is_spouse_blind']
+#                         employee.save()
+#                         updated_employees.append(employee.ee_id)
+#                 except Employee_Detail.DoesNotExist:
+#                     # Add new employee
+#                     Employee_Detail.objects.create(
+#                         ee_id=row['ee_id'],
+#                         cid=row['cid'],
+#                         age=row['age'],
+#                         social_security_number=row['social_security_number'],
+#                         blind=row['blind'],
+#                         home_state=row['home_state'],
+#                         work_state=row['work_state'],
+#                         gender=row['gender'],
+#                         pay_period=row['pay_period'],
+#                         number_of_exemptions=row['number_of_exemptions'],
+#                         filing_status=row['filing_status'],
+#                         marital_status=row['marital_status'],
+#                         number_of_student_default_loan=row['number_of_student_default_loan'],
+#                         support_second_family=row['support_second_family'],
+#                         spouse_age=row['spouse_age'],
+#                         is_spouse_blind=row['is_spouse_blind']
+#                     )
+#                     added_employees.append(row['ee_id'])
+
+#             # Check if any updates or insertions occurred
+#             if not updated_employees and not added_employees:
+#                 return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
+
+#             response_data = []
+
+#             if added_employees:
+#                 response_data.append({
+#                     'message': 'Employee(s) imported successfully',
+#                     'added_employees': added_employees
+#                 })
+
+#             if updated_employees:
+#                 response_data.append({
+#                     'message': 'Employee details updated successfully',
+#                     'updated_employees': updated_employees
+#                 })
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+# #new code for no updates
+
+# ##new1 6:20
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from ..models import Employee_Detail  # Import your Employee_Detail model
+# from django.core.files.storage import default_storage
+# import csv
+# import pandas as pd
+
+# @csrf_exempt
+# def import_employees_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']
+#         file_path = default_storage.save(file.name, file)  # Temporarily save the file
+#         updated_employees = []
+#         added_employees = []
+
+#         try:
+#             # Determine the file type
+#             if file.name.endswith('.csv'):
+#                 # Process CSV file
+#                 with open(file_path, 'r') as csvfile:
+#                     reader = csv.DictReader(csvfile)
+#                     data = list(reader)
+#             elif file.name.endswith(('.xls', '.xlsx')):
+#                 # Process Excel file
+#                 df = pd.read_excel(file_path)
+#                 data = df.to_dict(orient='records')  # Convert to list of dictionaries
+#             else:
+#                 return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
+
+#             # Process each row
+#             for row in data:
+#                 try:
+#                     # Retrieve the existing employee (if any)
+#                     employee = Employee_Detail.objects.get(ee_id=row['ee_id']) 
+
+#                     # Check if any field differs from the incoming data
+#                     has_changes = False
+#                     for field_name in [
+#                         'cid', 'age', 'social_security_number', 'home_state', 'work_state',
+#                         'pay_period', 'number_of_exemptions', 'filing_status', 'marital_status',
+#                         'number_of_student_default_loan', 'support_second_family', 'spouse_age' 
+#                     ]: 
+#                         if getattr(employee, field_name) != row[field_name]:
+#                             has_changes = True
+#                             break
+
+#                     # Handle boolean fields separately
+#                     if employee.blind != (row['blind'].lower() == 'true' or row['blind'].lower() == 'false'): 
+#                         has_changes = True
+#                     if employee.is_spouse_blind != (row['is_spouse_blind'].lower() == 'true' or row['is_spouse_blind'].lower() == 'false'):
+#                         has_changes = True
+
+#                     if has_changes:
+#                         # Update the employee record
+#                         employee.cid = row['cid']
+#                         employee.age = row['age']
+#                         employee.social_security_number = row['social_security_number']
+#                         employee.blind = row['blind'].lower() == 'true' 
+#                         employee.home_state = row['home_state']
+#                         employee.work_state = row['work_state']
+#                         employee.gender = row['gender'] 
+#                         employee.pay_period = row['pay_period']
+#                         employee.number_of_exemptions = row['number_of_exemptions']
+#                         employee.filing_status = row['filing_status']
+#                         employee.marital_status = row['marital_status']
+#                         employee.number_of_student_default_loan = row['number_of_student_default_loan']
+#                         employee.support_second_family = row['support_second_family'].lower() == 'true' 
+#                         employee.spouse_age = row['spouse_age']
+#                         employee.is_spouse_blind = row['is_spouse_blind'].lower() == 'true' 
+#                         employee.save()
+#                         updated_employees.append(employee.ee_id)
+#                 except Employee_Detail.DoesNotExist:
+#                     # Add new employee
+#                     Employee_Detail.objects.create(
+#                         ee_id=row['ee_id'],
+#                         cid=row['cid'],
+#                         age=row['age'],
+#                         social_security_number=row['social_security_number'],
+#                         blind=row['blind'].lower() == 'true', 
+#                         home_state=row['home_state'],
+#                         work_state=row['work_state'],
+#                         gender=row['gender'],
+#                         pay_period=row['pay_period'],
+#                         number_of_exemptions=row['number_of_exemptions'],
+#                         filing_status=row['filing_status'],
+#                         marital_status=row['marital_status'],
+#                         number_of_student_default_loan=row['number_of_student_default_loan'],
+#                         support_second_family=row['support_second_family'].lower() == 'true', 
+#                         spouse_age=row['spouse_age'],
+#                         is_spouse_blind=row['is_spouse_blind'].lower() == 'true' 
+#                     )
+#                     added_employees.append(row['ee_id'])
+
+#             # Check if any updates or insertions occurred
+#             if not updated_employees and not added_employees:
+#                 return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
+
+#             response_data = []
+
+#             if added_employees:
+#                 response_data.append({
+#                     'message': 'Employee(s) imported successfully',
+#                     'added_employees': added_employees
+#                 })
+
+#             if updated_employees:
+#                 response_data.append({
+#                     'message': 'Employee details updated successfully',
+#                     'updated_employees': updated_employees
+#                 })
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+# ##new1 6:20
+
+@csrf_exempt
+def upsert_company_details_api(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        file = request.FILES['file']  
+        file_name = file.name  
+        updated_companies = []
+        added_companies = []
+
+        try:
+            
+            if file_name.endswith('.csv'):
+                df = pd.read_csv(file)
+            elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+                df = pd.read_excel(file)
+            else:
+                return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+
+            
+            for _, row in df.iterrows():
+                
+                company = company_details.objects.filter(cid=row['cid']).first()
+
+                if company:
+                   
+                    has_changes = (
+                        company.ein != row['ein'] or
+                        company.company_name != row['company_name'] or
+                        company.zipcode != row['zipcode'] or
+                        company.state != row['state'] or
+                        company.dba_name != row['dba_name'] or
+                        company.bank_name != row.get('bank_name', None) or
+                        company.bank_account_number != row.get('bank_account_number', None) or
+                        company.location != row.get('location', None)
+                    )
+
+                    if has_changes:
+                        
+                        company.ein = row['ein']
+                        company.company_name = row['company_name']
+                        company.zipcode = row['zipcode']
+                        company.state = row['state']
+                        company.dba_name = row['dba_name']
+                        company.bank_name = row.get('bank_name', None)
+                        company.bank_account_number = row.get('bank_account_number', None)
+                        company.location = row.get('location', None)
+                        company.save()
+                        updated_companies.append(company.cid)
+                else:
+                    
+                    company_details.objects.create(
+                        cid=row['cid'],
+                        ein=row['ein'],
+                        company_name=row['company_name'],
+                        zipcode=row['zipcode'],
+                        state=row['state'],
+                        dba_name=row['dba_name'],
+                        bank_name=row.get('bank_name', None),
+                        bank_account_number=row.get('bank_account_number', None),
+                        location=row.get('location', None)
+                    )
+                    added_companies.append(row['cid'])
+
+            
+            response_data = []
+            if added_companies:
+                response_data.append({
+                    'message': 'Company details imported successfully',
+                    'added_companies': added_companies
+                })
+            if updated_companies:
+                response_data.append({
+                    'message': 'Company details updated successfully',
+                    'updated_companies': updated_companies
+                })
+
+            return JsonResponse({'responses': response_data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+#garnishment_data
+
+#friday_11:45 #2
 @csrf_exempt
 def import_employees_api(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -1249,6 +1894,9 @@ def import_employees_api(request):
                     added_employees.append(row['ee_id'])
 
             # Prepare response
+            if not added_employees and not updated_employees:
+                return JsonResponse({'message': 'No data is inserted or updated.'}, status=200)
+
             response_data = []
             if added_employees:
                 response_data.append({
@@ -1267,89 +1915,4 @@ def import_employees_api(request):
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
-#Upsert the company details
-
-@csrf_exempt
-def upsert_company_details_api(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        file = request.FILES['file']  
-        file_name = file.name  
-        updated_companies = []
-        added_companies = []
-
-        try:
-            
-            if file_name.endswith('.csv'):
-                df = pd.read_csv(file)
-            elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
-                df = pd.read_excel(file)
-            else:
-                return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
-
-            
-            for _, row in df.iterrows():
-                
-                company = company_details.objects.filter(cid=row['cid']).first()
-
-                if company:
-                   
-                    has_changes = (
-                        company.ein != row['ein'] or
-                        company.company_name != row['company_name'] or
-                        company.zipcode != row['zipcode'] or
-                        company.state != row['state'] or
-                        company.DBA_name != row['dba_name'] or
-                        company.bank_name != row.get('bank_name', None) or
-                        company.bank_account_number != row.get('bank_account_number', None) or
-                        company.location != row.get('location', None)
-                    )
-
-                    if has_changes:
-                        
-                        company.ein = row['ein']
-                        company.company_name = row['company_name']
-                        company.zipcode = row['zipcode']
-                        company.state = row['state']
-                        company.dba_name = row['dba_name']
-                        company.bank_name = row.get('bank_name', None)
-                        company.bank_account_number = row.get('bank_account_number', None)
-                        company.location = row.get('location', None)
-                        company.save()
-                        updated_companies.append(company.co_id)
-                else:
-                    
-                    company_details.objects.create(
-                        co_id=row['cid'],
-                        ein=row['ein'],
-                        company_name=row['company_name'],
-                        zipcode=row['zipcode'],
-                        state=row['state'],
-                        DBA_name=row['dba_name'],
-                        bank_name=row.get('bank_name', None),
-                        bank_account_number=row.get('bank_account_number', None),
-                        location=row.get('location', None)
-                    )
-                    added_companies.append(row['co_id'])
-
-            
-            response_data = []
-            if added_companies:
-                response_data.append({
-                    'message': 'Company details imported successfully',
-                    'added_companies': added_companies
-                })
-            if updated_companies:
-                response_data.append({
-                    'message': 'Company details updated successfully',
-                    'updated_companies': updated_companies
-                })
-
-            return JsonResponse({'responses': response_data}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-#garnishment_data
+#11:45
