@@ -98,6 +98,8 @@ class Employee_Detail(models.Model):
     support_second_family = models.BooleanField()
     spouse_age = models.IntegerField(null=True, blank=True)
     is_spouse_blind = models.BooleanField(null=True, blank=True)
+    record_import = models.DateTimeField(null=True, blank=True)
+    record_updated = models.DateTimeField(null=True, blank=True)
 
 class payroll(models.Model):
     cid= models.CharField(max_length=255)
@@ -132,6 +134,8 @@ class garnishment_order(models.Model):
     amount= models.DecimalField(max_digits=250,decimal_places=2)
     arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
     arrear_amount= models.DecimalField(max_digits=250,decimal_places=2)
+    record_import = models.DateTimeField(null=True, blank=True)
+    record_updated = models.DateTimeField(null=True, blank=True)
    
 # # Employer_Profile details
 # class Employer_Profile(models.Model):
@@ -459,6 +463,7 @@ class company_details(models.Model):
     bank_name = models.CharField(max_length=255, null=True, blank=True)
     bank_account_number = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
+
     
 
 #garnishment_order_table

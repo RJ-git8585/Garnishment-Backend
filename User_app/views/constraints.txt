@@ -48,3 +48,40 @@ tzdata==2024.1
 uritemplate==4.1.1
 urllib3==2.2.2
 xlrd==2.0.1
+
+
+,
+        {
+          "ee_id": "EMP002",
+          "gross_pay": 670,
+          "state": "Alabama",
+          "pay_period": "weekly",
+          "order_id":"DE101",
+          
+          "payroll_taxes": [
+            { "federal_income_tax": 12 },
+            { "social_security_tax": 18 },
+            { "medicare_tax": 5 },
+            { "state_tax": 5 },
+            { "local_tax": 10 }
+          ],
+          "payroll_deductions": {
+            "medical_insurance": 400
+          },
+          "no_of_student_default_loan": 2,
+          "support_second_family": "Yes",
+          "arrears_greater_than_12_weeks": "Yes",
+          "age": 43,
+          "is_blind": true,
+          "is_spouse_blind": true,
+          "spouse_age": 38,
+          "garnishment_data": [
+              {" type":
+              "child_support","data":[
+       
+                  { "amount": 190, "arrear": 0 ,"case_id":101},
+                  { "amount": 140, "arrear": 10 ,"case_id":201}
+                ]
+            }
+          ]
+        

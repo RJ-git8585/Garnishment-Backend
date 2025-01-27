@@ -19,6 +19,7 @@ urlpatterns = [
     path('TaxDetails/', TaxDetails, name='Tax_details'),
     path('employee_details/', EmployeeDetailsAPIView.as_view(), name='employee_details'),
     path('update_employee_details/<str:cid>/<str:ee_id>/',EmployeeDetailsUpdateAPIView.as_view(), name='Employee_Details_UpdateAPIView'),
+    path('update_company_details/<str:cid>/',CompanyDetailsUpdateAPIView.as_view(), name='Company_Details_UpdateAPIView'),
     path('employer-profile/<int:employer_id>/',EmployerProfileEditView.as_view(),name='Employer_Profile_UpdateAPIView'),
     path('upload/<int:employer_id>', PDFFileUploadView, name='upload_pdf'),
     path('getemployeedetails/<str:cid>/', get_employee_by_employer_id, name='employee-by-employer-id'),

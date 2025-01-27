@@ -361,6 +361,53 @@ class EmployeeDetailsUpdateAPIView(RetrieveUpdateAPIView):
             )
 
 
+
+    
+#update employee Details
+@method_decorator(csrf_exempt, name='dispatch')
+class CompanyDetailsUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = company_details.objects.all()
+    serializer_class = company_details_serializer
+    lookup_fields = ('cid')  # Corrected to a tuple for multiple fields
+
+    def get_object(self):
+        """
+        Overriding `get_object` to fetch the instance based on multiple fields.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {field: self.kwargs[field] for field in self.lookup_fields}
+        obj = queryset.filter(**filter_kwargs).first()
+        if not obj:
+            raise Exception(f"Object not found with {filter_kwargs}")
+        return obj
+
+    def put(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            # Logging the update action
+            LogEntry.objects.create(
+                action='Company details updated',
+                details=f'Company details updated successfully for Employee ID {instance.cid}'
+            )
+
+            # Preparing the response data
+            response_data = {
+                'success': True,
+                'message': 'Data updated successfully',
+                'status_code': status.HTTP_200_OK
+            }
+            return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return JsonResponse(
+                {'error': str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 #PDF upload view
 @transaction.atomic
 def PDFFileUploadView(request, employer_id):
