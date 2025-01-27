@@ -32,7 +32,7 @@ class ChildSupport:
             with open(file_path, 'r') as file:
                 # Load and return the JSON data in one step
                 data = json.load(file)  # Load the JSON data once
- # Print if needed
+
                 return data  # Return the loaded data
         except FileNotFoundError:
             raise Exception(f"File not found: {file_path}")
@@ -226,13 +226,13 @@ class MultipleChild(ChildSupport):
             # Apply the allocation method for garnishment
             if allocation_method_for_garnishment == "prorate":
                 child_support_amount = {
-                    f"child support amount {i+1}": (amount / twa) * ade for i, amount in enumerate(tcsa)
+                    f"child support amount{i+1}": (amount / twa) * ade for i, amount in enumerate(tcsa)
                 }
                 
                 amount_left_for_arrears = wa - sum(tcsa)
 
                 if amount_left_for_arrears <= 0:
-                    arrear_amount = {f"arrear amount {i+1}": 0 for i, _ in enumerate(taa)}
+                    arrear_amount = {f"arrear amount{i+1}": 0 for i, _ in enumerate(taa)}
                 else:
                     if amount_left_for_arrears >=taa:
                         arrear_amount={f"arrear amount{i+1}": (amount/taa)*amount_left_for_arrears for i, amount in enumerate(taa)}
@@ -241,7 +241,7 @@ class MultipleChild(ChildSupport):
             
             elif allocation_method_for_garnishment == "divide equally":
                 child_support_amount = {
-                    f"child support amount {i+1}": ade / len(tcsa) for i, _ in enumerate(tcsa)
+                    f"child support amount{i+1}": ade / len(tcsa) for i, _ in enumerate(tcsa)
                 }
                 
                 amount_left_for_arrears = ade - sum(tcsa)
@@ -258,82 +258,56 @@ class MultipleChild(ChildSupport):
 
         return child_support_amount, arrear_amount
     
-# record=   {
-#           "ee_id": "EMP002",
-#           "gross_pay": 670,
-#           "state": "Alabama",
-#           "pay_period": "weekly",
-#           "order_id":"DE101",
-          
-#           "payroll_taxes": [
-#             { "federal_income_tax": 12 },
-#             { "social_security_tax": 18 },
-#             { "medicare_tax": 5 },
-#             { "state_tax": 5 },
-#             { "local_tax": 10 }
-#           ],
-#           "payroll_deductions": {
-#             "medical_insurance": 400
-#           },
-#           "no_of_student_default_loan": 2,
-#           "support_second_family": "Yes",
-#           "arrears_greater_than_12_weeks": "Yes",
-#           "age": 43,
-#           "is_blind": True,
-#           "is_spouse_blind": True,
-#           "spouse_age": 38,
-#           "garnishment_data": [
-#               {" type": "child_support",
-#               "data":[
-       
-#                   { "amount": 190, "arrear": 0 ,"case_id":101}
-#                 ]
-#             }
-#           ]}
-    
 
-# record= {
-#           "ee_id": "EE005665",
-#           "gross_pay": 950,
-#           "state": "Florida",
-#           "pay_period": "Weekly",
-#           "no_of_exception_for_self": 2,
-#           "filing_status": "head_of_household",
-#           "net_pay": 732.3,
+    
+# record=  {
+#           "ee_id": "EE005256",
+#           "gross_pay": 1500,
+#           "state": "Hawaii",
+#           "no_of_exemption_for_self": 2,
+#           "pay_period": "Biweekly",
+#           "filing_status": "married_filing_separate_return",
+#           "net_pay": 1230.3400000000001,
 #           "payroll_taxes": [
 #             {
-#               "federal_income_tax": 95
+#               "federal_income_tax": 60.0
 #             },
 #             {
-#               "social_security_tax": 58.9
+#               "social_security_tax": 78.9
 #             },
 #             {
-#               "medicare_tax": 13.8
+#               "medicare_tax": 45.76
 #             },
 #             {
-#               "state_tax": 0
+#               "state_tax": 13.0
 #             },
 #             {
-#               "local_tax": 0
+#               "local_tax": 12.0
 #             }
 #           ],
 #           "payroll_deductions": {
-#             "medical_insurance": 50
+#             "medical_insurance": 60
 #           },
-#           "age": 50,
+#           "age": 59,
 #           "is_blind": False,
 #           "is_spouse_blind": False,
-#           "spouse_age": 21,
+#           "spouse_age": 63,
 #           "support_second_family": "No",
+#           "no_of_student_default_loan": 0,
 #           "arrears_greater_than_12_weeks": "Yes",
 #           "garnishment_data": [
 #             {
-#               "type": "child support",
+#               "type": "Child Support",
 #               "data": [
 #                 {
-#                   "amount": 100,
-#                   "arrear": 0,
-#                   "case_id": "C81426"
+#                   "case_id": "C72298",
+#                   "amount": 400,
+#                   "arrear": 35
+#                 },
+#                 {
+#                   "case_id": "C72298",
+#                   "amount": 450,
+#                   "arrear": 25
 #                 }
 #               ]
 #             }

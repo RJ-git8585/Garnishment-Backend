@@ -27,10 +27,9 @@ urlpatterns = [
     path('IWO_Data',insert_iwo_detail, name='iwo_pdf_data'),
     path('Department',DepartmentViewSet, name='Department'),
     path('Location',LocationViewSet, name='Location'),     
-    path('EmployeeDelete/<int:employee_id>/<int:employer_id>/',EmployeeDeleteAPIView.as_view(), name='Employee-Delete-APIView'),
-    path('TaxDelete/<int:tax_id>/<int:employer_id>/',TaxDeleteAPIView.as_view(), name='Tax-Delete-APIView'),
-    path('DepartmentDelete/<int:department_id>/<int:employer_id>/',DepartmentDeleteAPIView.as_view(), name='Department-Delete-APIView'),
-    path('LocationDelete/<int:location_id>/<int:employer_id>/',LocationDeleteAPIView.as_view(), name='Department-Delete-APIView'),
+    path('EmployeeDelete/<str:cid>/<str:ee_id>/',EmployeeDeleteAPIView.as_view(), name='Employee-Delete-APIView'),
+    path('GarOrderDelete/<str:case_id>/',GarOrderDeleteAPIView.as_view(), name='Gar-Order-Delete-APIView'),
+    path('CompanyDelete/<str:cid>/',CompanyDeleteAPIView.as_view(), name='Company-Delete-APIView'),
     path('ExportEmployees/<str:cid>/', export_employee_data, name='export-employee-data'),
     path('EmployeeImportView/<int:employer_id>/', EmployeeImportView.as_view(), name='Employee-Import-View'),
     path('logdata', LastFiveLogsView.as_view(), name=' Garnishment Calculation'),
@@ -51,9 +50,15 @@ urlpatterns = [
     #path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
     path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api '),
     path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
+
     path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails'),
     #path('upsert-payroll-data/', upsert_payroll_details_api, name='upsert_payroll_details_api'),
-    path('upsert-garnishment-data/', upsert_garnishment_order_api, name='upsert_garnishment_order_api')
+    path('upsert-garnishment-data/', upsert_garnishment_order_api, name='upsert_garnishment_order_api'),
+
+    path('upsert_gar_order/', upsert_garnishment_order, name='upsert_garnishment_order'),
+    path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails'),
+    path('ExportCompany/', export_company_data, name='export_company_data')
+
 
 
     

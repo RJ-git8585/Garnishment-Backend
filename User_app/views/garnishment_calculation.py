@@ -61,12 +61,7 @@ class CalculationDataView(APIView):
                                     else SingleChild().calculate(record)
                                 )
                                 child_support_data = result[0]
-                                print("child_support_data",child_support_data)
-                                print("l",len(result))
- 
                                 arrear_amount_data = result[1]
-                                print("arrear_amount_data",arrear_amount_data)
-
                                 case_id_get=garnishment_data[0]["data"]
 
                                  # Transform data into the desired format
@@ -143,18 +138,6 @@ class CalculationDataView(APIView):
                                 {"error": f"Unsupported garnishment_type: {garnishment_type}"},
                                 status=status.HTTP_400_BAD_REQUEST
                             )
-                        
-
-
-    
-                        # # Append each order to the orders list
-                        # garnishment_results.append({
-                        #     "order_id": record.get("order_id"),
-                        #     "garnishment_type": garnishment_type,
-                        #     "withholding_amt": result
-                        # })
-    
-                    # Append employee data with all their orders
                     
                     cid_summary["employees"].append({
                         "ee_id": record.get("ee_id"),
@@ -192,122 +175,3 @@ class CalculationDataView(APIView):
                 {"error": str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
-
-
-
-# record=   {
-#       "ee_id": "EMP009",
-#       "employer_id" :"EMP001",
-#       "gross_pay": 600,
-#       "employee_name": "Michael Johnson",
-#       "garnishment_fees": 5,
-#       "arrears_greater_than_12_weeks": "Yes",
-#       "support_second_family": "Yes",
-#       "child_support" : [ {"amount": 200, "arrear": 6}, {"amount": 300, "arrear": 0}],
-#       "taxs":[{"fit":200 },{"sst":10} ,{"mct":20}, {"st":10} , {"lt":5}],
-#       "state": "Florida",
-#       "arrears_amount1": 99,
-#       "pay_period" : "weekly",
-#       "mandatory_deductions":10.0,
-#        "garnishment_type":"child_support"
-# } 
-
-# print("calculate_twa",ChildSupport().calculate_twa(record))
-# print("calculate_de_rule",ChildSupport().calculate_de_rule(record))
-# print("calculate_md",ChildSupport().calculate_md(record))
-# print("calculate_wl",ChildSupport().calculate_wl(record))
-# print("calculate_tcsa",ChildSupport().get_list_supportAmt(record))
-# print("calculate_tcsa_sum",sum(ChildSupport().get_list_supportAmt(record)))
-# print("calculate_taa",ChildSupport().get_list_support_arrearAmt(record))
-# print("calculate_ade",ChildSupport().calculate_ade(record))
-# print("calculate_wa",ChildSupport().calculate_wa(record))
-
-
-    
-                    # elif len(garnishment_data)>1:
-                    #     # Validate student loan fields
-                    #     required_student_loan_fields = ["gross_pay", "pay_period","no_of_student_default_loan","taxes"]
-                    #     missing_student_loan_fields = [
-                    #         field for field in required_student_loan_fields if field not in record
-                    #     ]
-                        
-                    #     if not missing_student_loan_fields:
-                    #          result = multiple_garnishment_case().calculate(record)
-                    #     else:
-                    #         result = {"error": f"Missing fields in record: {', '.join(missing_student_loan_fields)}"}    
-
-
-                            #             if not missing_fields:
-                            #     tcsa = ChildSupport().get_list_supportAmt(record)
-                            #     result = (
-                            #         MultipleChild().calculate(record)
-                            #         if len(tcsa) > 1
-                            #         else ChildSupport().calculate(record)
-                            #     )
-                            #     for idx, item in enumerate(result):
-                            #         garnishment_results.append({
-                            #             "order_id": f"{record.get('order_id', 'DE')}-{idx + 1}",
-                            #             "garnishment_type": garnishment_type,
-                            #             "withholding_amt": item
-                            #         })
-                            # else:
-                            #     garnishment_results.append({
-                            #         "error": f"Missing fields in record: {', '.join(missing_fields)}"
-                            #     })
-
-
-
-# {
-#           "ee_id": "EE005254",
-#           "gross_pay": 1600,
-#           "state": "Massachusetts",
-#           "no_of_exemption_for_self": 1,
-#           "pay_period": "Semimonthly",
-#           "filing_status": "single_filing_status",
-#           "net_pay": 1369.5,
-#           "payroll_taxes": [
-#             {
-#               "federal_income_tax": 160.0
-#             },
-#             {
-#               "social_security_tax": 45.0
-#             },
-#             {
-#               "medicare_tax": 10.5
-#             },
-#             {
-#               "state_tax": 15.0
-#             },
-#             {
-#               "local_tax": 0.0
-#             }
-#           ],
-#           "payroll_deductions": {
-#             "medical_insurance": 0
-#           },
-#           "age": 41,
-#           "is_blind": false,
-#           "is_spouse_blind": true,
-#           "spouse_age": 46,
-#           "support_second_family": "No",
-#           "no_of_student_default_loan": 0,
-#           "arrears_greater_than_12_weeks": "Yes",
-#           "garnishment_data": [
-#             {
-#               "type": "Federal Tax Levy",
-#               "data": [
-#                 {
-#                   "case_id": "C72296",
-#                   "amount1": 0,
-#                   "arrear1": 0
-#                 },
-#                 {
-#                   "case_id": "C72296",
-#                   "amount2": 0,
-#                   "arrear2": 0
-#                 }
-#               ]
-#             }
-#           ]
-#         }

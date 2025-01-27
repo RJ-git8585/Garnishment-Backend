@@ -13,7 +13,7 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
 
 class EmployeeDetailsSerializer(serializers.ModelSerializer):
 
-    blind = serializers.BooleanField(required=False, allow_null=True)
+    is_blind = serializers.BooleanField(required=False, allow_null=True)
     support_second_family = serializers.BooleanField(required=False, allow_null=True)
     spouse_age = serializers.IntegerField(required=False, allow_null=True)
     is_spouse_blind = serializers.BooleanField(required=False, allow_null=True)
@@ -25,7 +25,7 @@ class EmployeeDetailsSerializer(serializers.ModelSerializer):
 class garnishment_order_serializer(serializers.ModelSerializer):
     class Meta:
         model = garnishment_order
-        fields = ['cid','eeid','case_id','state','type','sdu','start_date','end_date','amount','arrear_greater_than_12_weeks','arrear_amount']
+        fields = ['id','cid','eeid','case_id','state','type','sdu','start_date','end_date','amount','arrear_greater_than_12_weeks','arrear_amount']
  
 
 class GetEmployerDetailsSerializer(serializers.ModelSerializer):

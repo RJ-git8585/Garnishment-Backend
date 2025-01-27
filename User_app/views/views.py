@@ -387,6 +387,7 @@ def PDFFileUploadView(request, employer_id):
 
 
 
+
 # #Get Employer Details on the bases of Employer_ID
 # @api_view(['GET'])
 # def get_employee_by_employer_id(self, employer_id):
@@ -449,6 +450,7 @@ def PDFFileUploadView(request, employer_id):
 
         # )
 
+
 @api_view(['GET'])
 def get_employee_by_employer_id(request, cid):
     employees=Employee_Detail.objects.filter(cid=cid)
@@ -485,7 +487,7 @@ def get_order_details(request, cid):
             return JsonResponse({'error': str(e), status:status.HTTP_500_INTERNAL_SERVER_ERROR})  
 
     else:
-        return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
+        return JsonResponse({'message': 'Company ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
 
 
@@ -632,83 +634,84 @@ def LocationViewSet(request):
 # For  Deleting the Employee Details
 @method_decorator(csrf_exempt, name='dispatch')
 class EmployeeDeleteAPIView(DestroyAPIView):
-    queryset = Employee_Detail.objects.all()
-    lookup_field = 'employee_id'
 
-    def get_object(self):
-        employee_id = self.kwargs.get('employee_id')
-        employer_id = self.kwargs.get('employer_id')
-        return Employee_Detail.objects.get(employee_id=employee_id, employer_id=employer_id)
-    
-    @csrf_exempt
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        LogEntry.objects.create(
-            action='Employee details Deleted',
-            details=f'Employee details Deleted successfully with Employee ID {instance.employee_id} and Employer ID {instance.cid}'
-        )
-        response_data = {
-            'success': True,
-            'message': 'Location Data Deleted successfully',
-            'status code': status.HTTP_200_OK
-        }
-        return JsonResponse(response_data)
+        queryset = Employee_Detail.objects.all()
+        lookup_field = 'ee_id'
+
+        def get_object(self):
+            ee_id = self.kwargs.get('ee_id')
+            cid = self.kwargs.get('cid')
+            return Employee_Detail.objects.get(ee_id=ee_id, cid=cid)
+
+        @csrf_exempt
+        def delete(self, request, *args, **kwargs):
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            LogEntry.objects.create(
+                action='Employee details Deleted',
+                details=f'Employee details Deleted successfully with Employee ID {instance.ee_id} and Employer ID {instance.cid}'
+            )
+            response_data = {
+                'success': True,
+                'message': 'Employee Data Deleted successfully',
+                'status code': status.HTTP_200_OK
+            }
+            return JsonResponse(response_data)
+        
 
            
 # For Deleting the Tax Details
 @method_decorator(csrf_exempt, name='dispatch')
-class TaxDeleteAPIView(DestroyAPIView):
-    queryset = Tax_details.objects.all()
-    lookup_field = 'tax_id'
+class CompanyDeleteAPIView(DestroyAPIView):
+    queryset = company_details.objects.all()
+    lookup_field = 'cid'
     @csrf_exempt
     def get_object(self):
-        tax_id = self.kwargs.get('tax_id')
-        employer_id = self.kwargs.get('employer_id')
-        return Tax_details.objects.get(tax_id=tax_id, employer_id=employer_id)
+        cid = self.kwargs.get('cid')
+
+        return company_details.objects.get(cid=cid)
     
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         LogEntry.objects.create(
-        action='Tax details Deleted',
-        details=f'Tax details Deleted successfully with ID {instance.tax_id} and Employer ID {instance.employer_id}'
+        action='Company details deleted',
+        details=f'Company details Deleted successfully with Company ID {instance.cid}'
             ) 
         response_data = {
                 'success': True,
-                'message': 'Tax Data Deleted successfully',
+                'message': 'Company Data Deleted successfully',
                 'status code': status.HTTP_200_OK}
         return JsonResponse(response_data)
     
 
-    
 
 # For Deleting the Location Details
 @method_decorator(csrf_exempt, name='dispatch')
-class LocationDeleteAPIView(DestroyAPIView):
-    queryset = Location.objects.all()
-    lookup_field = 'location_id'
+class GarOrderDeleteAPIView(DestroyAPIView):
+    queryset = garnishment_order.objects.all()
+    lookup_field = 'case_id'
     @csrf_exempt
     def get_object(self):
-        location_id = self.kwargs.get('location_id')
-        employer_id = self.kwargs.get('employer_id')  
-        return self.queryset.filter(location_id=location_id, employer_id=employer_id).first()  
+        case_id = self.kwargs.get('case_id')
+        return self.queryset.filter(case_id=case_id)
 
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         LogEntry.objects.create(
-            action='Location details Deleted',
-            details=f'Location details Deleted successfully with ID {instance.location_id} and Employer ID {instance.employer_id}'
+            action='Garnishment order details Deleted',
+            details=f'Garnishment order deleted successfully with Case ID'
         )
         response_data = {
             'success': True,
-            'message': 'Location Data Deleted successfully',
+            'message': 'Garnishment order Data Deleted successfully',
             'status code': status.HTTP_200_OK
         }
         return JsonResponse(response_data)
+    
 
 
 # For Deleting the Department Details
@@ -771,6 +774,36 @@ def export_employee_data(request, cid):
 
     except Exception as e:
         return JsonResponse({'detail': str(e), 'status code ': status.HTTP_500_INTERNAL_SERVER_ERROR})
+
+
+@api_view(['GET'])
+def export_company_data(request):
+    try:
+        employees = company_details.objects.all()
+        if not employees.exists():
+            return JsonResponse({'detail': 'No employees found for this employer ID', 'status': status.HTTP_404_NOT_FOUND})
+
+        serializer = company_details_serializer(employees, many=True)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="company_data.csv"'
+
+        writer = csv.writer(response)
+
+        # Updated header fields
+        header_fields = ['cid','ein','company_name','registered_address','zipcode','state','dba_name','bank_name','bank_account_number','location']
+        writer.writerow(header_fields)
+
+        # Write rows dynamically
+        for employee in serializer.data:
+            row = [employee.get(field, '') for field in header_fields]
+            writer.writerow(row)
+
+        return response
+
+    except Exception as e:
+        return JsonResponse({'detail': str(e), 'status code ': status.HTTP_500_INTERNAL_SERVER_ERROR})
+
+
 
 
 #Import employee details using the Excel file
@@ -2980,4 +3013,235 @@ import math
 #     return JsonResponse({'error': 'Invalid request'}, status=400)
 #working as needed and good 
 #not updating the data specially the "nan"
+
+
+
+@csrf_exempt
+def upsert_employees_data(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        print("called")
+        file = request.FILES['file']
+        updated_employees = []
+        added_employees = []
+
+        try:
+            
+            if file.name.endswith('.csv'):
+                
+                data = list(csv.DictReader(file.read().decode('utf-8').splitlines()))
+            elif file.name.endswith(('.xls', '.xlsx')):
+                
+                df = pd.read_excel(file)
+                data = df.to_dict(orient='records')  
+            else:
+                return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
+
+           
+            for row in data:
+                
+                row = {k: v for k, v in row.items() if k and not k.startswith('Unnamed:')}
+
+                
+                updated_row = {}
+                for k, v in row.items():
+                    if k == "social_security_number" and isinstance(v, float) and math.isnan(v):
+                        updated_row[k] = ""
+                    else:
+                        updated_row[k] = v
+
+                try:
+                    
+                    employee_detail = Employee_Detail.objects.get(ee_id=updated_row['ee_id'], cid=updated_row['cid'])
+
+                    
+                    has_changes = False
+                    for field_name in [
+                        'age', 'social_security_number', 'is_blind', 'home_state', 'work_state', 'gender', 'pay_period',
+                        'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
+                        'support_second_family', 'spouse_age', 'is_spouse_blind'
+                    ]:
+                        incoming_value = updated_row.get(field_name)
+                        if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
+                            incoming_value = incoming_value.lower() in ['true', '1', 'yes']
+                        elif isinstance(getattr(employee_detail, field_name), bool):
+                            incoming_value = bool(incoming_value)  
+                        if getattr(employee_detail, field_name) != incoming_value:
+                            has_changes = True
+                            break
+
+                    if has_changes:
+                        
+                        for field_name in [
+                            'age', 'social_security_number', 'is_blind', 'home_state', 'work_state', 'gender', 'pay_period',
+                            'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
+                            'support_second_family', 'spouse_age', 'is_spouse_blind'
+                        ]:
+                            incoming_value = updated_row.get(field_name)
+                            if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
+                                incoming_value = incoming_value.lower() in ['true', '1', 'yes']
+                            elif isinstance(getattr(employee_detail, field_name), bool):
+                                incoming_value = bool(incoming_value)  
+                            setattr(employee_detail, field_name, incoming_value)
+                        employee_detail.save()
+                        updated_employees.append(employee_detail.ee_id)
+                except Employee_Detail.DoesNotExist:
+                    
+                    Employee_Detail.objects.create(
+                        ee_id=updated_row['ee_id'],
+                        cid=updated_row['cid'],
+                        age=updated_row.get('age'),
+                        social_security_number=updated_row.get('social_security_number'),
+                        is_blind=updated_row.get('blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('blind'), str) else updated_row.get('blind'),
+                        home_state=updated_row.get('home_state'),
+                        work_state=updated_row.get('work_state'),
+                        gender=updated_row.get('gender'),
+                        pay_period=updated_row.get('pay_period'),
+                        number_of_exemptions=updated_row.get('number_of_exemptions'),
+                        filing_status=updated_row.get('filing_status'),
+                        marital_status=updated_row.get('marital_status'),
+                        number_of_student_default_loan=updated_row.get('number_of_student_default_loan'),
+                        support_second_family=updated_row.get('support_second_family').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('support_second_family'), str) else updated_row.get('support_second_family'),
+                        spouse_age=updated_row.get('spouse_age'),
+                        is_spouse_blind=updated_row.get('is_spouse_blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('is_spouse_blind'), str) else updated_row.get('is_spouse_blind')
+                    )
+                    added_employees.append(updated_row['ee_id'])
+
+           
+            if not updated_employees and not added_employees:
+                return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
+
+            response_data = []
+
+            if added_employees:
+                response_data.append({
+                    'message': 'Employee(s) imported successfully',
+                    'added_employees': added_employees
+                })
+
+            if updated_employees:
+                response_data.append({
+                    'message': 'Employee details updated successfully',
+                    'updated_employees': updated_employees
+                })
+
+            return JsonResponse({'responses': response_data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+ 
+@csrf_exempt
+def upsert_garnishment_order(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        file = request.FILES['file']
+        file_name = file.name
+        updated_orders = []
+        added_orders = []
+        no_change = []
+
+        try:
+            # Load file into a DataFrame
+            if file_name.endswith('.csv'):
+                df = pd.read_csv(file)
+            elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+                df = pd.read_excel(file)
+            else:
+                return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+
+            # Format date columns
+            date_columns = ['start_date', 'end_date']
+            for col in date_columns:
+                if col in df.columns:
+                    df[col] = pd.to_datetime(df[col], errors='coerce')
+                    df[col] = df[col].apply(lambda x: x.date() if not pd.isna(x) else None)
+
+            # Process each row
+            for _, row in df.iterrows():
+                try:
+                    # Skip rows with missing 'cid' or 'eeid'
+                    if pd.isna(row['cid']) or pd.isna(row['eeid']):
+                        continue
+
+                    # Retrieve existing order
+                    order = garnishment_order.objects.filter(cid=row['cid'], eeid=row['eeid']).first()
+
+                    if order:
+                        # Check for changes
+                        has_changes = (
+                            order.case_id != row.get('case_id', None) or
+                            order.state != row['state'] or
+                            order.type != row['type'] or
+                            order.sdu != row.get('sdu', None) or
+                            order.start_date != row.get('start_date', None) or
+                            order.end_date != row.get('end_date', None) or
+                            float(order.amount) != float(row['amount']) or
+                            order.arrear_greater_than_12_weeks != row['arrear_greater_than_12_weeks'] or
+                            float(order.arrear_amount) != float(row['arrear_amount'])
+                        )
+
+                        if has_changes:
+                            # Update order
+                            order.case_id = row.get('case_id', None)
+                            order.state = row['state']
+                            order.type = row['type']
+                            order.sdu = row.get('sdu', None)
+                            order.start_date = row.get('start_date', None)
+                            order.end_date = row.get('end_date', None)
+                            order.amount = row['amount']
+                            order.arrear_greater_than_12_weeks = row['arrear_greater_than_12_weeks']
+                            order.arrear_amount = row['arrear_amount']
+                            order.save()
+                            updated_orders.append({'cid': order.cid, 'eeid': order.eeid})
+                        else:
+                            no_change.append({'cid': order.cid, 'eeid': order.eeid})
+                    else:
+                        # Create new order
+                        garnishment_order.objects.create(
+                            cid=row['cid'],
+                            eeid=row['eeid'],
+                            case_id=row.get('case_id', None),
+                            state=row['state'],
+                            type=row['type'],
+                            sdu=row.get('sdu', None),
+                            start_date=row.get('start_date', None),
+                            end_date=row.get('end_date', None),
+                            amount=row['amount'],
+                            arrear_greater_than_12_weeks=row['arrear_greater_than_12_weeks'],
+                            arrear_amount=row['arrear_amount']
+                        )
+                        added_orders.append({'cid': row['cid'], 'eeid': row['eeid']})
+
+                except Exception as e:
+                    return JsonResponse({'error': str(e), "status code" :status.HTTP_500_INTERNAL_SERVER_ERROR}) 
+                
+            # Prepare response data
+            if added_orders or updated_orders:
+                response_data = []
+                if added_orders:
+                    response_data.append({
+                        'message': 'Garnishment orders imported successfully',
+                        'added_orders': added_orders
+                    })
+                if updated_orders:
+                    response_data.append({
+                        'message': 'Garnishment orders updated successfully',
+                        'updated_orders': updated_orders
+                    })
+                if no_change:
+                    response_data.append({
+                        'message': 'No change for certain orders',
+                        'no_change_orders': no_change
+                    })
+            else:
+                response_data = {'message': 'No changes in data'}
+
+            return JsonResponse({'responses': response_data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
