@@ -459,6 +459,7 @@ class company_details(models.Model):
     bank_name = models.CharField(max_length=255, null=True, blank=True)
     bank_account_number = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
+    
 
 #garnishment_order_table
 # class garnishment_order(models.Model):

@@ -755,7 +755,7 @@ def export_employee_data(request, cid):
         # Updated header fields
         header_fields = [
             'ee_id', 'cid', 'age', 'social_security_number',
-            'blind', 'home_state', 'work_state', 'gender', 'pay_period',
+            'is_blind', 'home_state', 'work_state', 'gender', 'pay_period',
             'number_of_exemptions', 'filing_status', 'marital_status',
             'number_of_student_default_loan', 'support_second_family',
             'spouse_age', 'is_spouse_blind'
@@ -1850,89 +1850,92 @@ import io
 #     return JsonResponse({'error': 'Invalid request'}, status=400)
 # ##new1 6:20
 # company data correct working
-@csrf_exempt
-def upsert_company_details_api(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        file = request.FILES['file']  
-        file_name = file.name  
-        updated_companies = []
-        added_companies = []
+#code.upsert_file 
+# @csrf_exempt
+# def upsert_company_details_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         file = request.FILES['file']  
+#         file_name = file.name  
+#         updated_companies = []
+#         added_companies = []
 
-        try:
-            # Load data from file
-            if file_name.endswith('.csv'):
-                df = pd.read_csv(file)
-            elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
-                df = pd.read_excel(file)
-            else:
-                return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
+#         try:
+#             # Load data from file
+#             if file_name.endswith('.csv'):
+#                 df = pd.read_csv(file)
+#             elif file_name.endswith(('.xlsx', '.xls', '.xlsm', '.xlsb', '.odf', '.ods', '.odt')):
+#                 df = pd.read_excel(file)
+#             else:
+#                 return JsonResponse({"error": "Unsupported file format. Please upload a CSV or Excel file."}, status=400)
 
-            # Iterate through DataFrame rows
-            for _, row in df.iterrows():
-                company = company_details.objects.filter(cid=row['cid']).first()
+#             # Iterate through DataFrame rows
+#             for _, row in df.iterrows():
+#                 company = company_details.objects.filter(cid=row['cid']).first()
 
-                if company:
-                    # Check for changes
-                    has_changes = (
-                        company.ein != row['ein'] or
-                        company.company_name != row['company_name'] or
-                        company.zipcode != row['zipcode'] or
-                        company.state != row['state'] or
-                        company.dba_name != row['dba_name'] or
-                        company.bank_name != row.get('bank_name', None) or
-                        company.bank_account_number != row.get('bank_account_number', None) or
-                        company.location != row.get('location', None) or
-                        company.registered_address != row.get('registered_address', None)
-                    )
+#                 if company:
+#                     # Check for changes
+#                     has_changes = (
+#                         company.ein != row['ein'] or
+#                         company.company_name != row['company_name'] or
+#                         company.zipcode != row['zipcode'] or
+#                         company.state != row['state'] or
+#                         company.dba_name != row['dba_name'] or
+#                         company.bank_name != row.get('bank_name', None) or
+#                         company.bank_account_number != row.get('bank_account_number', None) or
+#                         company.location != row.get('location', None) or
+#                         company.registered_address != row.get('registered_address', None)
+#                     )
 
-                    if has_changes:
-                        # Update company details
-                        company.ein = row['ein']
-                        company.company_name = row['company_name']
-                        company.zipcode = row['zipcode']
-                        company.state = row['state']
-                        company.dba_name = row['dba_name']
-                        company.bank_name = row.get('bank_name', None)
-                        company.bank_account_number = row.get('bank_account_number', None)
-                        company.location = row.get('location', None)
-                        company.registered_address = row.get('registered_address', None)
-                        company.save()
-                        updated_companies.append(company.cid)
-                else:
-                    # Add new company
-                    company_details.objects.create(
-                        cid=row['cid'],
-                        ein=row['ein'],
-                        company_name=row['company_name'],
-                        zipcode=row['zipcode'],
-                        state=row['state'],
-                        dba_name=row['dba_name'],
-                        bank_name=row.get('bank_name', None),
-                        bank_account_number=row.get('bank_account_number', None),
-                        location=row.get('location', None),
-                        registered_address=row.get('registered_address', None)
-                    )
-                    added_companies.append(row['cid'])
+#                     if has_changes:
+#                         # Update company details
+#                         company.ein = row['ein']
+#                         company.company_name = row['company_name']
+#                         company.zipcode = row['zipcode']
+#                         company.state = row['state']
+#                         company.dba_name = row['dba_name']
+#                         company.bank_name = row.get('bank_name', None)
+#                         company.bank_account_number = row.get('bank_account_number', None)
+#                         company.location = row.get('location', None)
+#                         company.registered_address = row.get('registered_address', None)
+#                         company.save()
+#                         updated_companies.append(company.cid)
+#                 else:
+#                     # Add new company
+#                     company_details.objects.create(
+#                         cid=row['cid'],
+#                         ein=row['ein'],
+#                         company_name=row['company_name'],
+#                         zipcode=row['zipcode'],
+#                         state=row['state'],
+#                         dba_name=row['dba_name'],
+#                         bank_name=row.get('bank_name', None),
+#                         bank_account_number=row.get('bank_account_number', None),
+#                         location=row.get('location', None),
+#                         registered_address=row.get('registered_address', None)
+#                     )
+#                     added_companies.append(row['cid'])
 
-            # Prepare response
-            response_data = []
-            if added_companies:
-                response_data.append({
-                    'message': 'Company details imported successfully',
-                    'added_companies': added_companies
-                })
-            if updated_companies:
-                response_data.append({
-                    'message': 'Company details updated successfully',
-                    'updated_companies': updated_companies
-                })
+#             # Prepare response
+#             response_data = []
+#             if added_companies:
+#                 response_data.append({
+#                     'message': 'Company details imported successfully',
+#                     'added_companies': added_companies
+#                 })
+#             if updated_companies:
+#                 response_data.append({
+#                     'message': 'Company details updated successfully',
+#                     'updated_companies': updated_companies
+#                 })
 
-            return JsonResponse({'responses': response_data}, status=200)
+#             return JsonResponse({'responses': response_data}, status=200)
 
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
 
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+#code above this line working!
 
 #garnishment_data
 #27/01 at 2:51 
@@ -2857,123 +2860,124 @@ import math
 #ending
 
 #INSERTING THE DATA WIHT THE SAME LOGIC
-@csrf_exempt
-def upsert_employees_data_api(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        print("called")
-        file = request.FILES['file']
-        file_path = default_storage.save(file.name, file)  # Temporarily save the file
-        updated_employees = []
-        added_employees = []
+# @csrf_exempt
+# def upsert_employees_data_api(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         print("called")
+#         file = request.FILES['file']
+#         file_path = default_storage.save(file.name, file)  # Temporarily save the file
+#         updated_employees = []
+#         added_employees = []
 
-        try:
-            # Determine the file type
-            if file.name.endswith('.csv'):
-                # Process CSV file
-                with open(file_path, 'r') as csvfile:
-                    reader = csv.DictReader(csvfile)
-                    data = list(reader)
-            elif file.name.endswith(('.xls', '.xlsx')):
-                # Process Excel file
-                df = pd.read_excel(file_path)
-                data = df.to_dict(orient='records')  # Convert to list of dictionaries
-            else:
-                return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
+#         try:
+#             # Determine the file type
+#             if file.name.endswith('.csv'):
+#                 # Process CSV file
+#                 with open(file_path, 'r') as csvfile:
+#                     reader = csv.DictReader(csvfile)
+#                     data = list(reader)
+#             elif file.name.endswith(('.xls', '.xlsx')):
+#                 # Process Excel file
+#                 df = pd.read_excel(file_path)
+#                 data = df.to_dict(orient='records')  # Convert to list of dictionaries
+#             else:
+#                 return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
 
-            # Process each row
-            for row in data:
-                # Filter out irrelevant keys like unnamed columns
-                row = {k: v for k, v in row.items() if k and not k.startswith('Unnamed:')}
+#             # Process each row
+#             for row in data:
+#                 # Filter out irrelevant keys like unnamed columns
+#                 row = {k: v for k, v in row.items() if k and not k.startswith('Unnamed:')}
 
-                # Apply updated_row logic
-                updated_row = {}
-                for k, v in row.items():
-                    if k == "social_security_number" and isinstance(v, float) and math.isnan(v):
-                        updated_row[k] = ""
-                    else:
-                        updated_row[k] = v
+#                 # Apply updated_row logic
+#                 updated_row = {}
+#                 for k, v in row.items():
+#                     if k == "social_security_number" and isinstance(v, float) and math.isnan(v):
+#                         updated_row[k] = ""
+#                     else:
+#                         updated_row[k] = v
 
-                try:
-                    # Retrieve the existing employee details (if any)
-                    employee_detail = Employee_Detail.objects.get(ee_id=updated_row['ee_id'], cid=updated_row['cid'])
+#                 try:
+#                     # Retrieve the existing employee details (if any)
+#                     employee_detail = Employee_Detail.objects.get(ee_id=updated_row['ee_id'], cid=updated_row['cid'])
 
-                    # Check if any field differs from the incoming data
-                    has_changes = False
-                    for field_name in [
-                        'age', 'social_security_number', 'blind', 'home_state', 'work_state', 'gender', 'pay_period',
-                        'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
-                        'support_second_family', 'spouse_age', 'is_spouse_blind'
-                    ]:
-                        incoming_value = updated_row.get(field_name)
+#                     # Check if any field differs from the incoming data
+#                     has_changes = False
+#                     for field_name in [
+#                         'age', 'social_security_number', 'blind', 'home_state', 'work_state', 'gender', 'pay_period',
+#                         'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
+#                         'support_second_family', 'spouse_age', 'is_spouse_blind'
+#                     ]:
+#                         incoming_value = updated_row.get(field_name)
 
-                        if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
-                            incoming_value = incoming_value.lower() in ['true', '1', 'yes']
-                        elif isinstance(getattr(employee_detail, field_name), bool):
-                            incoming_value = bool(incoming_value)  # Ensure incoming value is boolean
-                        if getattr(employee_detail, field_name) != incoming_value:
-                            has_changes = True
-                            break
+#                         if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
+#                             incoming_value = incoming_value.lower() in ['true', '1', 'yes']
+#                         elif isinstance(getattr(employee_detail, field_name), bool):
+#                             incoming_value = bool(incoming_value)  # Ensure incoming value is boolean
+#                         if getattr(employee_detail, field_name) != incoming_value:
+#                             has_changes = True
+#                             break
 
-                    if has_changes:
-                        # Update the employee detail record
-                        for field_name in [
-                            'age', 'social_security_number', 'blind', 'home_state', 'work_state', 'gender', 'pay_period',
-                            'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
-                            'support_second_family', 'spouse_age', 'is_spouse_blind'
-                        ]:
-                            incoming_value = updated_row.get(field_name)
-                            if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
-                                incoming_value = incoming_value.lower() in ['true', '1', 'yes']
-                            elif isinstance(getattr(employee_detail, field_name), bool):
-                                incoming_value = bool(incoming_value)  # Ensure incoming value is boolean
-                            setattr(employee_detail, field_name, incoming_value)
-                        employee_detail.save()
-                        updated_employees.append(employee_detail.ee_id)
-                except Employee_Detail.DoesNotExist:
-                    # Add new employee detail
-                    Employee_Detail.objects.create(
-                        ee_id=updated_row['ee_id'],
-                        cid=updated_row['cid'],
-                        age=updated_row.get('age'),
-                        social_security_number=updated_row.get('social_security_number'),
-                        blind=updated_row.get('blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('blind'), str) else updated_row.get('blind'),
-                        home_state=updated_row.get('home_state'),
-                        work_state=updated_row.get('work_state'),
-                        gender=updated_row.get('gender'),
-                        pay_period=updated_row.get('pay_period'),
-                        number_of_exemptions=updated_row.get('number_of_exemptions'),
-                        filing_status=updated_row.get('filing_status'),
-                        marital_status=updated_row.get('marital_status'),
-                        number_of_student_default_loan=updated_row.get('number_of_student_default_loan'),
-                        support_second_family=updated_row.get('support_second_family').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('support_second_family'), str) else updated_row.get('support_second_family'),
-                        spouse_age=updated_row.get('spouse_age'),
-                        is_spouse_blind=updated_row.get('is_spouse_blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('is_spouse_blind'), str) else updated_row.get('is_spouse_blind')
-                    )
-                    added_employees.append(updated_row['ee_id'])
+#                     if has_changes:
+#                         # Update the employee detail record
+#                         for field_name in [
+#                             'age', 'social_security_number', 'blind', 'home_state', 'work_state', 'gender', 'pay_period',
+#                             'number_of_exemptions', 'filing_status', 'marital_status', 'number_of_student_default_loan',
+#                             'support_second_family', 'spouse_age', 'is_spouse_blind'
+#                         ]:
+#                             incoming_value = updated_row.get(field_name)
+#                             if isinstance(getattr(employee_detail, field_name), bool) and isinstance(incoming_value, str):
+#                                 incoming_value = incoming_value.lower() in ['true', '1', 'yes']
+#                             elif isinstance(getattr(employee_detail, field_name), bool):
+#                                 incoming_value = bool(incoming_value)  # Ensure incoming value is boolean
+#                             setattr(employee_detail, field_name, incoming_value)
+#                         employee_detail.save()
+#                         updated_employees.append(employee_detail.ee_id)
+#                 except Employee_Detail.DoesNotExist:
+#                     # Add new employee detail
+#                     Employee_Detail.objects.create(
+#                         ee_id=updated_row['ee_id'],
+#                         cid=updated_row['cid'],
+#                         age=updated_row.get('age'),
+#                         social_security_number=updated_row.get('social_security_number'),
+#                         blind=updated_row.get('blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('blind'), str) else updated_row.get('blind'),
+#                         home_state=updated_row.get('home_state'),
+#                         work_state=updated_row.get('work_state'),
+#                         gender=updated_row.get('gender'),
+#                         pay_period=updated_row.get('pay_period'),
+#                         number_of_exemptions=updated_row.get('number_of_exemptions'),
+#                         filing_status=updated_row.get('filing_status'),
+#                         marital_status=updated_row.get('marital_status'),
+#                         number_of_student_default_loan=updated_row.get('number_of_student_default_loan'),
+#                         support_second_family=updated_row.get('support_second_family').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('support_second_family'), str) else updated_row.get('support_second_family'),
+#                         spouse_age=updated_row.get('spouse_age'),
+#                         is_spouse_blind=updated_row.get('is_spouse_blind').lower() in ['true', '1', 'yes'] if isinstance(updated_row.get('is_spouse_blind'), str) else updated_row.get('is_spouse_blind')
+#                     )
+#                     added_employees.append(updated_row['ee_id'])
 
-            # Check if any updates or insertions occurred
-            if not updated_employees and not added_employees:
-                return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
+#             # Check if any updates or insertions occurred
+#             if not updated_employees and not added_employees:
+#                 return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
 
-            response_data = []
+#             response_data = []
 
-            if added_employees:
-                response_data.append({
-                    'message': 'Employee(s) imported successfully',
-                    'added_employees': added_employees
-                })
+#             if added_employees:
+#                 response_data.append({
+#                     'message': 'Employee(s) imported successfully',
+#                     'added_employees': added_employees
+#                 })
 
-            if updated_employees:
-                response_data.append({
-                    'message': 'Employee details updated successfully',
-                    'updated_employees': updated_employees
-                })
+#             if updated_employees:
+#                 response_data.append({
+#                     'message': 'Employee details updated successfully',
+#                     'updated_employees': updated_employees
+#                 })
 
-            return JsonResponse({'responses': response_data}, status=200)
+#             return JsonResponse({'responses': response_data}, status=200)
 
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
 
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
 #working as needed and good 
 #not updating the data specially the "nan"
+
