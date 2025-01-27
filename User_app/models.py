@@ -435,9 +435,9 @@ class company_details(models.Model):
 #     sdu= models.CharField(max_length=255, null=True, blank=True)
 #     start_date= models.DateField(max_length=255, null=True, blank=True)
 #     end_date= models.DateField(max_length=255, null=True, blank=True)
-#     amount= models.DecimalField(max_length=255)
+#     amount= models.DecimalField()
 #     arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
-#     arrear_amount= models.DecimalField(max_length=255)
+#     arrear_amount= models.DecimalField()
 
 # class payroll
 
@@ -446,16 +446,16 @@ class company_details(models.Model):
 #     eeid= models.CharField(max_length=255)
 #     payroll_date=models.DateField()
 #     pay_date= models.DateField()
-#     gross_pay=models.DecimalField(max_length=255)
-#     net_pay=models.DecimalField(max_length=255)
-#     taxes_federal_income_tax=models.DecimalField(max_length=255)
-#     taxes_state_tax=models.DecimalField(max_length=255)
-#     taxes_local_tax=models.DecimalField(max_length=255)
-#     taxes_medicare_tax=models.DecimalField(max_length=255)
-#     taxes_sdi=models.DecimalField(max_length=255)
-#     deductions=models.DecimalField(max_length=255)
+#     gross_pay=models.DecimalField()
+#     net_pay=models.DecimalField()
+#     taxes_federal_income_tax=models.DecimalField()
+#     taxes_state_tax=models.DecimalField()
+#     taxes_local_tax=models.DecimalField()
+#     taxes_medicare_tax=models.DecimalField()
+#     taxes_sdi=models.DecimalField()
+#     deductions=models.DecimalField()
 #     type=models.CharField(max_length=255)
-#     amount=models.DecimalField(max_length=255)
+#     amount=models.DecimalField()
 
 # CID          
 # EEID
