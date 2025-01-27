@@ -1913,6 +1913,11 @@ def upsert_company_details_api(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 #garnishment_data
+#27/01 at 2:51 
+#1
+
+# upsert the garnishment data
+
 
 #friday_11:45 #2
 #well working and functional_____________________________

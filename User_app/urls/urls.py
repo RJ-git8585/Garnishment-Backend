@@ -4,6 +4,7 @@ from ..views.views import *
 from django.urls import include, path
 from ..views.view_state_tax import *
 from ..views.view_multiple_garnishment import *
+from ..views.upsert import *
 
 urlpatterns = [
     path('', include('User_app.urls.url_federal_tax')),
@@ -49,7 +50,9 @@ urlpatterns = [
     #path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
     path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api '),
     path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
-    path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails')
+    path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails'),
+    path('upsert-payroll-data/', upsert_payroll_details_api, name='upsert_payroll_details_api'),
+    path('upsert-garnishment-data/', upsert_garnishment_order_api, name='upsert_garnishment_order_api')
 
 
     
