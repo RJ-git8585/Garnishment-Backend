@@ -320,25 +320,45 @@ class EmployerProfileEditView(RetrieveUpdateAPIView):
 class EmployeeDetailsUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Employee_Detail.objects.all()
     serializer_class = EmployeeDetailsSerializer
-    lookup_field = 'employee_id'  
+    lookup_fields = ('ee_id', 'cid')  # Corrected to a tuple for multiple fields
+
+    def get_object(self):
+        """
+        Overriding `get_object` to fetch the instance based on multiple fields.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {field: self.kwargs[field] for field in self.lookup_fields}
+        obj = queryset.filter(**filter_kwargs).first()
+        if not obj:
+            raise Exception(f"Object not found with {filter_kwargs}")
+        return obj
+
     def put(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            LogEntry.objects.create(
-            action='Employee details Updated',
-            details=f'Employee details Updated successfully for Employee ID {instance.employee_id}'
-                )
-            response_data = {
-                    'success': True,
-                    'message': 'Data Updated successfully',
-                    'status code': status.HTTP_200_OK}
-        except Exception as e:
-            return JsonResponse({'error': str(e), "status code":status.HTTP_500_INTERNAL_SERVER_ERROR}) 
-        return JsonResponse(response_data)
 
+            # Logging the update action
+            LogEntry.objects.create(
+                action='Employee details updated',
+                details=f'Employee details updated successfully for Employee ID {instance.ee_id}'
+            )
+
+            # Preparing the response data
+            response_data = {
+                'success': True,
+                'message': 'Data updated successfully',
+                'status_code': status.HTTP_200_OK
+            }
+            return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return JsonResponse(
+                {'error': str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 #PDF upload view
@@ -367,25 +387,25 @@ def PDFFileUploadView(request, employer_id):
 
 
 
-#Get Employer Details on the bases of Employer_ID
-@api_view(['GET'])
-def get_employee_by_employer_id(self, employer_id):
-    employees=Employee_Detail.objects.filter(employer_id=employer_id)
-    instance = self.get_object()
-    if employees.exists():
-        try:
-            serializer = EmployeeDetailsSerializer(employees, many=True)
-            response_data = {
-                    'success': True,
-                    'message': 'Data Get successfully',
-                    'status code': status.HTTP_200_OK}
-            response_data['data'] = serializer.data
-            return JsonResponse(response_data)
+# #Get Employer Details on the bases of Employer_ID
+# @api_view(['GET'])
+# def get_employee_by_employer_id(self, employer_id):
+#     employees=Employee_Detail.objects.filter(employer_id=employer_id)
+#     instance = self.get_object()
+#     if employees.exists():
+#         try:
+#             serializer = EmployeeDetailsSerializer(employees, many=True)
+#             response_data = {
+#                     'success': True,
+#                     'message': 'Data Get successfully',
+#                     'status code': status.HTTP_200_OK}
+#             response_data['data'] = serializer.data
+#             return JsonResponse(response_data)
 
-        except Employee_Detail.DoesNotExist:
-            return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
-    else:
-        return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
+#         except Employee_Detail.DoesNotExist:
+#             return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
+#     else:
+#         return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
 
 
@@ -446,6 +466,26 @@ def get_employee_by_employer_id(request, cid):
     else:
         return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
+<<<<<<< HEAD
+=======
+@api_view(['GET'])
+def get_single_employee_details(request, cid,ee_id):
+    employees=Employee_Detail.objects.filter(cid=cid,ee_id=ee_id)
+    if employees.exists():
+        try:
+            serializer = EmployeeDetailsSerializer(employees, many=True)
+            response_data = {
+                    'success': True,
+                    'message': 'Data Get successfully',
+                    'status code': status.HTTP_200_OK}
+            response_data['data'] = serializer.data
+            return JsonResponse(response_data)
+        except Employee_Detail.DoesNotExist:
+            return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
+    else:
+        return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
+
+>>>>>>> fbc9a7174d9bc76ff860616bacdfbb8dff47b9ec
 #Get Employer Details from employer ID
 @api_view(['GET'])
 def get_employer_details(request, employer_id):
@@ -823,21 +863,21 @@ class CompanyDetails(APIView):
 
 
 
-#Get the single employee details
-@api_view(['GET'])
-def get_single_Employee_Detail(request, employer_id, employee_id):
-    try:
-        employee = Employee_Detail.objects.get(employer_id=employer_id, employee_id=employee_id)
-        serializer = EmployeeDetailsSerializer(employee)
-        response_data = {
-            'success': True,
-            'message': 'Employee Data retrieved successfully',
-            'status code': status.HTTP_200_OK,
-            'data': serializer.data
-        }
-        return JsonResponse(response_data)
-    except Employee_Detail.DoesNotExist:
-        return JsonResponse({'message': 'Data not found', 'status code': status.HTTP_404_NOT_FOUND})
+# #Get the single employee details
+# @api_view(['GET'])
+# def get_single_Employee_Detail(request, employer_id, employee_id):
+#     try:
+#         employee = Employee_Detail.objects.get(employer_id=employer_id, employee_id=employee_id)
+#         serializer = EmployeeDetailsSerializer(employee)
+#         response_data = {
+#             'success': True,
+#             'message': 'Employee Data retrieved successfully',
+#             'status code': status.HTTP_200_OK,
+#             'data': serializer.data
+#         }
+#         return JsonResponse(response_data)
+#     except Employee_Detail.DoesNotExist:
+#         return JsonResponse({'message': 'Data not found', 'status code': status.HTTP_404_NOT_FOUND})
 
     
 

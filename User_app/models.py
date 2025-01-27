@@ -99,6 +99,35 @@ class Employee_Detail(models.Model):
     spouse_age = models.IntegerField(null=True, blank=True)
     is_spouse_blind = models.BooleanField(null=True, blank=True)
 
+class payroll(models.Model):
+    cid= models.CharField(max_length=255)
+    eeid= models.CharField(max_length=255)
+    payroll_date=models.DateField()
+    pay_date= models.DateField()
+    gross_pay=models.DecimalField(max_digits=250,decimal_places=2)
+    net_pay=models.DecimalField(max_digits=250,decimal_places=2)
+    taxes_federal_income_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    taxes_state_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    taxes_local_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    taxes_medicare_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    taxes_sdi=models.DecimalField(max_digits=250,decimal_places=2)
+    deductions=models.DecimalField(max_digits=250,decimal_places=2)
+    type=models.CharField(max_length=255)
+    amount=models.DecimalField(max_digits=250,decimal_places=2)
+
+class garnishment_order(models.Model):
+    cid = models.IntegerField()
+    eeid= models.IntegerField()
+    case_id= models.CharField(max_length=255, null=True, blank=True)
+    state= models.CharField(max_length=255)
+    type= models.CharField(max_length=255)
+    sdu= models.CharField(max_length=255, null=True, blank=True)
+    start_date= models.DateField(max_length=255, null=True, blank=True)
+    end_date= models.DateField(max_length=255, null=True, blank=True)
+    amount= models.DecimalField(max_digits=250,decimal_places=2)
+    arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
+    arrear_amount= models.DecimalField(max_digits=250,decimal_places=2)
+
 
     
 # # Employer_Profile details
