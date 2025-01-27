@@ -24,7 +24,7 @@ from django.db import models
 #         return self.username
     
 class Employer_Profile(AbstractBaseUser):
-    employer_id = models.CharField(max_length=255, primary_key=True)
+    employer_id = models.AutoField(primary_key=True)
     employer_name = models.CharField(max_length=100,default="ABS")
     email = models.EmailField(unique=True,default="rtt@gmail.com")
     username = models.CharField(max_length=100, unique=True,default="USN")
@@ -413,7 +413,7 @@ class multiple_garnishment_case_result(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class company_details(models.Model):
-    cid= models.IntegerField() 
+    cid= models.CharField(max_length=255) 
     ein = models.IntegerField() 
     company_name = models.CharField(max_length=255)
     registered_address= models.CharField(max_length=255, null=True, blank=True)
@@ -438,3 +438,32 @@ class company_details(models.Model):
 #     amount= models.DecimalField(max_length=255)
 #     arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
 #     arrear_amount= models.DecimalField(max_length=255)
+
+# class payroll
+
+# class payroll(models.Model):
+#     cid= models.CharField(max_length=255)
+#     eeid= models.CharField(max_length=255)
+#     payroll_date=models.DateField()
+#     pay_date= models.DateField()
+#     gross_pay=models.DecimalField(max_length=255)
+#     net_pay=models.DecimalField(max_length=255)
+#     taxes_federal_income_tax=models.DecimalField(max_length=255)
+#     taxes_state_tax=models.DecimalField(max_length=255)
+#     taxes_local_tax=models.DecimalField(max_length=255)
+#     taxes_medicare_tax=models.DecimalField(max_length=255)
+#     taxes_sdi=models.DecimalField(max_length=255)
+#     deductions=models.DecimalField(max_length=255)
+#     type=models.CharField(max_length=255)
+#     amount=models.DecimalField(max_length=255)
+
+# CID          
+# EEID
+# PayrollDate
+# PayDate
+# Gross Pay
+# Net Pay
+# Taxes
+# Deductions
+# Type
+# Amount

@@ -20,7 +20,7 @@ urlpatterns = [
     path('employee_details/<int:employee_id>/',EmployeeDetailsUpdateAPIView.as_view(), name='Employee_Details_UpdateAPIView'),
     path('employer-profile/<int:employer_id>/',EmployerProfileEditView.as_view(),name='Employer_Profile_UpdateAPIView'),
     path('upload/<int:employer_id>', PDFFileUploadView, name='upload_pdf'),
-    path('getemployeedetails/<int:employer_id>/', get_employee_by_employer_id, name='employee-by-employer-id'),
+    path('getemployeedetails/<str:cid>/', get_employee_by_employer_id, name='employee-by-employer-id'),
     path('getemployerdetails/<int:employer_id>/', get_employer_details, name='employer-detail-by-employer-id'),
     path('DashboardData',get_dashboard_data, name='iwo_dashboard'),
     path('IWO_Data',insert_iwo_detail, name='iwo_pdf_data'),
@@ -45,7 +45,7 @@ urlpatterns = [
     path('multiple_garnishment_case/',multiple_case_calculation, name='state_tax_case'),
     path('multiple_garnishment_result/<str:employer_id>/<str:employee_id>/',get_multiple_garnishment_case_result.as_view(), name='state_tax_case'),
     #path('ChildSupportBatchResult/<str:batch_id>', ChildSupportGarnishmentBatchResult.as_view(), name='Calculation Data'),
-    path('upsert-employees-details/', import_employees_api, name='import_employees_api'),
+    path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api'),
     path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api')
     
 
