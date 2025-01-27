@@ -22,9 +22,10 @@ from django.db import models
 
 #     def __str__(self):
 #         return self.username
-    
+
 class Employer_Profile(AbstractBaseUser):
     employer_id = models.AutoField(primary_key=True)
+    cid=models.CharField(max_length=100,default="ABS")
     employer_name = models.CharField(max_length=100,default="ABS")
     email = models.EmailField(unique=True,default="rtt@gmail.com")
     username = models.CharField(max_length=100, unique=True,default="USN")
@@ -85,7 +86,7 @@ class Employee_Detail(models.Model):
     cid=models.CharField(max_length=255)
     age = models.IntegerField()
     social_security_number = models.CharField(max_length=255)
-    blind = models.BooleanField(null=True, blank=True)
+    is_blind = models.BooleanField(null=True, blank=True)
     home_state=models.CharField(max_length=255)
     work_state=models.CharField(max_length=255)
     gender=models.CharField(max_length=255,null=True, blank=True)
@@ -412,6 +413,9 @@ class multiple_garnishment_case_result(models.Model):
     net_pay = models.FloatField()  
     timestamp = models.DateTimeField(auto_now_add=True)
 
+
+
+
 class company_details(models.Model):
     cid= models.CharField(max_length=255) 
     ein = models.IntegerField() 
@@ -457,13 +461,4 @@ class company_details(models.Model):
 #     type=models.CharField(max_length=255)
 #     amount=models.DecimalField()
 
-# CID          
-# EEID
-# PayrollDate
-# PayDate
-# Gross Pay
-# Net Pay
-# Taxes
-# Deductions
-# Type
-# Amount
+

@@ -1,7 +1,7 @@
 {
     "single_filing_status": [
         {
-            "Pay Period": "Daily",
+            "Pay Period": "daily",
             "0": 57.69,
             "1": 77.31,
             "2": 96.93,
@@ -11,7 +11,7 @@
             "6": "57.69 plus 19.62 for each exemption"
         },
         {
-            "Pay Period": "Weekly",
+            "Pay Period": "weekly",
             "0": 288.46,
             "1": 386.54,
             "2": 484.62,
@@ -21,7 +21,7 @@
             "6": "288.46 plus 98.08 for each exemption"
         },
         {
-            "Pay Period": "Biweekly",
+            "Pay Period": "biweekly",
             "0": 576.92,
             "1": 773.07,
             "2": 969.22,
@@ -31,7 +31,7 @@
             "6": "576.92 plus 196.15 for each exemption"
         },
         {
-            "Pay Period": "Semimonthly",
+            "Pay Period": "semimonthly",
             "0": 625,
             "1": 837.5,
             "2": 1050,
@@ -41,7 +41,7 @@
             "6": "625.00 plus 212.50 for each exemption"
         },
         {
-            "Pay Period": "Monthly",
+            "Pay Period": "monthly",
             "0": 1250,
             "1": 1675,
             "2": 2100,

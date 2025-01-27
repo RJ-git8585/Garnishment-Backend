@@ -18,7 +18,7 @@ class AllocationMethodIdentifiers:
 
     def get_allocation_method(self):
 
-        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/withholding_rules.json')
+        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/withholding_rules.json')
 
 
         # Reading the JSON file
@@ -76,7 +76,7 @@ class CalculateArrearAmountForChild:
 
 class WLIdentifier:
     def get_state_rules(self, state):
-        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/withholding_rules.json')
+        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/withholding_rules.json')
 
         # Reading the JSON file
         with open(file_path, 'r') as file:
@@ -94,7 +94,7 @@ class WLIdentifier:
         return f"No allocation method found for the state: {state.capitalize()}." 
 
     def find_wl_value(self, de,state, employee_id, supports_2nd_family, arrears_of_more_than_12_weeks, de_gt_145, order_gt_one):
-        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/withholding_limits.json')
+        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/withholding_limits.json')
         state_rule = self.get_state_rules(state)
 
         # Reading the JSON file
@@ -116,3 +116,20 @@ class WLIdentifier:
         
         return f"No matching WL found for this employee: {employee_id}"
 
+
+# class ChangeResultStructure:
+#     def __init__(self,result,case_id,garnishment_type):
+#         self.result=result
+#         self.case_id=case_id
+#         self.garnishment_type=garnishment_type
+#         pass
+#     def structurechange(self):
+#         garnishment={}
+#         if len(self.result)>1:
+#             for i in range(len(self.result)):
+#                 garnishment[f"withholding_amt_SL{i+1}"] =self.result[i]
+            
+
+
+
+#             garnishment

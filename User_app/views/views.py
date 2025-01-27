@@ -60,10 +60,12 @@ def login(request):
                 'message': 'Invalid credentials',
                 'status code': status.HTTP_400_BAD_REQUEST
             })
-
+        employee = get_object_or_404(Employer_Profile, employer_name=user.employer_name, employer_id=user.employer_id,cid=user.cid)
         if check_password(password, user.password):
             auth_login(request, user)
             user_data = {
+                "employer_id":employee.employer_id,
+                "cid":employee.cid,
                 'username': user.username,
                 'name': user.employer_name,
                 'email': user.email,
@@ -71,7 +73,11 @@ def login(request):
             try:
                 refresh = RefreshToken.for_user(user)
 
+# <<<<<<< HEAD
                 employee = get_object_or_404(Employer_Profile, employer_name=user.employer_name, cid=user.cid)
+# =======
+
+# >>>>>>> fc265ed477e089b2d584ad39b9de3885c44763a1
                 application_activity.objects.create(
                 action='Employer Login',
                 details=f'Employer {employee.employer_name} Login successfully with ID {employee.cid}. '
@@ -79,7 +85,11 @@ def login(request):
                 response_data = {
                     'success': True,
                     'message': 'Login successfully',
+# <<<<<<< HEAD
                     "cid":employee.cid,
+# =======
+                   
+# >>>>>>> fc265ed477e089b2d584ad39b9de3885c44763a1
                     'user_data': user_data,
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
@@ -216,7 +226,7 @@ class EmployeeDetailsAPIView(APIView):
             # Log the action
             LogEntry.objects.create(
                 action='Employee details added',
-                details=f'Employee details added successfully with employee ID {employee.employee_id}'
+                details=f'Employee details added successfully with employee ID {employee.ee_id}'
             )
             
             return Response(
@@ -379,38 +389,62 @@ def get_employee_by_employer_id(self, employer_id):
 
 
 
+# @api_view(['GET'])
+# def get_employee_by_employer_id(request, cid):
+# # <<<<<<< HEAD
+#     try:
+#         # Check if employer_id is valid and query the database
+#         employees = Employee_Detail.objects.filter(cid=cid)
+        
+#         if employees.exists():
+# # =======
+#     employees=Employee_Detail.objects.filter(cid=cid)
+#     if employees.exists():
+#         try:
+#             serializer = EmployeeDetailsSerializer(employees, many=True)
+#             response_data = {
+#                 'success': True,
+#                 'message': 'Data retrieved successfully',
+#                 'status_code': status.HTTP_200_OK,
+#                 'data': serializer.data,
+#             }
+#             return JsonResponse(response_data, status=status.HTTP_200_OK)
+#         else:
+#             return JsonResponse(
+#                 {'success': False, 'message': 'Employer ID not found', 'status_code': status.HTTP_404_NOT_FOUND},
+#                 status=status.HTTP_404_NOT_FOUND
+#             )
+#     except ValueError:
+#         # Handle the case where employer_id is invalid
+#         return JsonResponse(
+#             {'success': False, 'message': 'Invalid Employer ID format', 'status_code': status.HTTP_400_BAD_REQUEST},
+#             status=status.HTTP_400_BAD_REQUEST
+#         )
+#     except Exception as e:
+#         # Catch any other unexpected errors
+#         return JsonResponse(
+#             {'success': False, 'message': f'An error occurred: {str(e)}', 'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR},
+#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+        # )
+
 @api_view(['GET'])
 def get_employee_by_employer_id(request, cid):
-    try:
-        # Check if employer_id is valid and query the database
-        employees = Employee_Detail.objects.filter(cid=cid)
-        
-        if employees.exists():
+    employees=Employee_Detail.objects.filter(cid=cid)
+    if employees.exists():
+        try:
             serializer = EmployeeDetailsSerializer(employees, many=True)
             response_data = {
-                'success': True,
-                'message': 'Data retrieved successfully',
-                'status_code': status.HTTP_200_OK,
-                'data': serializer.data,
-            }
-            return JsonResponse(response_data, status=status.HTTP_200_OK)
-        else:
-            return JsonResponse(
-                {'success': False, 'message': 'Employer ID not found', 'status_code': status.HTTP_404_NOT_FOUND},
-                status=status.HTTP_404_NOT_FOUND
-            )
-    except ValueError:
-        # Handle the case where employer_id is invalid
-        return JsonResponse(
-            {'success': False, 'message': 'Invalid Employer ID format', 'status_code': status.HTTP_400_BAD_REQUEST},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    except Exception as e:
-        # Catch any other unexpected errors
-        return JsonResponse(
-            {'success': False, 'message': f'An error occurred: {str(e)}', 'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+                    'success': True,
+                    'message': 'Data Get successfully',
+                    'status code': status.HTTP_200_OK}
+            response_data['data'] = serializer.data
+            return JsonResponse(response_data)
+        except Employee_Detail.DoesNotExist:
+            return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
+    else:
+        return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
 #Get Employer Details from employer ID
 @api_view(['GET'])
@@ -659,7 +693,7 @@ def export_employee_data(request, cid):
 
         # Updated header fields
         header_fields = [
-            'employee_id', 'cid', 'company_id', 'age', 'social_security_number',
+            'ee_id', 'cid', 'age', 'social_security_number',
             'blind', 'home_state', 'work_state', 'gender', 'pay_period',
             'number_of_exemptions', 'filing_status', 'marital_status',
             'number_of_student_default_loan', 'support_second_family',
@@ -762,6 +796,21 @@ class EmployeeDetailsList(APIView):
         try:
             employees = Employee_Detail.objects.all()
             serializer = EmployeeDetailsSerializer(employees, many=True)
+            response_data = {
+                        'success': True,
+                        'message': 'Data Get successfully',
+                        'status code': status.HTTP_200_OK,
+                        'data' : serializer.data}
+            return JsonResponse(response_data)
+        except Exception as e:
+            return Response({"error": str(e), "status code" :status.HTTP_500_INTERNAL_SERVER_ERROR})
+
+
+class CompanyDetails(APIView):
+    def get(self, request, format=None):
+        try:
+            employees = company_details.objects.all()
+            serializer = company_details_serializer(employees, many=True)
             response_data = {
                         'success': True,
                         'message': 'Data Get successfully',

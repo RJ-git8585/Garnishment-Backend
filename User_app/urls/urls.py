@@ -45,8 +45,13 @@ urlpatterns = [
     path('multiple_garnishment_case/',multiple_case_calculation, name='state_tax_case'),
     path('multiple_garnishment_result/<str:employer_id>/<str:employee_id>/',get_multiple_garnishment_case_result.as_view(), name='state_tax_case'),
     #path('ChildSupportBatchResult/<str:batch_id>', ChildSupportGarnishmentBatchResult.as_view(), name='Calculation Data'),
-    path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api'),
-    path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api')
+    #path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api'),
+    #path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
+    path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api '),
+    path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
+    path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails')
+
+
     
 
 ]

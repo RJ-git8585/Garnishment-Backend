@@ -25,9 +25,10 @@ sys.path.append(os.path.join(BASE_DIR, 'garnishment_library'))
 SECRET_KEY = 'django-insecure-4j-q2^gpu9&%imydt@@vq*h0i#9#(yv0)&q5ewvaftj(eocs2='
 
 # # SECURITY WARNING: don't run with debug turned on in production!
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+
 
 DEBUG = os.environ.get('DEBUG','False')=="False"
 STATIC_URL = '/static/'
@@ -214,6 +215,8 @@ USE_TZ = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

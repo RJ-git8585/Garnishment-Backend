@@ -21,16 +21,19 @@ class ChildSupport:
     CHILDSUPPORT = "child_support"
     
     def __init__(self):
-        self.de_rules_file  = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/disposable earning rules.json')
-        self.ccpa_rules_file = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/ccpa_rules.json')
+        self.de_rules_file  = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/disposable earning rules.json')
 
+        self.ccpa_rules_file = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/ccpa_rules.json')
     def _load_json_file(self, file_path):
         """
         Helper method to load a JSON file.
         """
         try:
             with open(file_path, 'r') as file:
-                return json.load(file)
+                # Load and return the JSON data in one step
+                data = json.load(file)  # Load the JSON data once
+ # Print if needed
+                return data  # Return the loaded data
         except FileNotFoundError:
             raise Exception(f"File not found: {file_path}")
         except json.JSONDecodeError:
@@ -62,12 +65,13 @@ class ChildSupport:
         """
         gross_pay = record.get("gross_pay")
         state = record.get("state")
-        taxes = record.get("taxes")
+        payroll_taxes = record.get("payroll_taxes")
 
-        if gross_pay is None or state is None or taxes is None:
-            raise ValueError("Record must include 'gross_pay', 'state', and 'tax' fields.")
+        if gross_pay is None or state is None or payroll_taxes is None:
+            raise ValueError("Record must include 'gross_pay', 'state', and 'taxs' fields.")
 
         de_rule = self.calculate_de_rule(record)
+
 
         data = self._load_json_file(self.ccpa_rules_file)
         ccpa_rules = data.get("CCPA_Rules", {})
@@ -76,11 +80,11 @@ class ChildSupport:
         mandatory_deductions = 0
         if de_rule.lower() == "ccpa":
             mandatory_tax_keys = ccpa_rules.get("Mandatory_deductions", [])
-            tax_amt = [tax.get(k, 0) for tax in taxes for k in mandatory_tax_keys if k in tax]
+            tax_amt = [tax.get(k, 0) for tax in payroll_taxes for k in mandatory_tax_keys if k in tax]
             mandatory_deductions = sum(tax_amt)
 
-
         return mandatory_deductions
+
     
 
 
@@ -91,21 +95,21 @@ class ChildSupport:
         return gross_pay - mandatory_deductions
     
     def get_list_supportAmt(self, record):
-        child_support=record.get(self.CHILDSUPPORT)
+        child_support_data = record["garnishment_data"][0]["data"]
 
         return [
             value 
-            for Amt_dict in child_support
+            for Amt_dict in child_support_data
             for key, value in Amt_dict.items() 
             if key.lower().startswith('amount')
         ]
 
 
     def get_list_support_arrearAmt(self, record):
-        child_support=record.get(self.CHILDSUPPORT)
+        child_support_data = record["garnishment_data"][0]["data"]
         return [
             value
-            for Amt_dict in child_support
+            for Amt_dict in child_support_data
             for key, value in Amt_dict.items() 
             if key.lower().startswith('arrear')
         ]
@@ -192,8 +196,9 @@ class SingleChild(ChildSupport):
             # ADE is not sufficient to cover the child support amount
             withholding_amount = ade
             arrear_amount = 0
-
-        return withholding_amount, arrear_amount
+        result_amt={"child support amount1":withholding_amount}
+        arrear_amt={"arrear amount1":arrear_amount}
+        return result_amt,arrear_amt
 
 class MultipleChild(ChildSupport):
     """
@@ -254,22 +259,89 @@ class MultipleChild(ChildSupport):
         return child_support_amount, arrear_amount
     
 # record=   {
-#       "employee_id": "EMP002",
-#       "employer_id" :"EMP001",
-#       "gross_pay": 400,
-#       "employee_name": "Michael Johnson",
-#       "garnishment_fees": 5,
-#       "arrears_greater_than_12_weeks": "Yes",
-#       "support_second_family": "No",
-#       "child_support" : [ {"amount": 150, "arrear": 15}, {"amount": 100, "arrear": 0}],
-#       "state": "Texas",
-#       "arrears_amount1": 99,
-#       "pay_period" : "weekly",
-#       "mandatory_deductions":40,
-#       "garnishment_type":"child_support"
-#     }   
-
+#           "ee_id": "EMP002",
+#           "gross_pay": 670,
+#           "state": "Alabama",
+#           "pay_period": "weekly",
+#           "order_id":"DE101",
+          
+#           "payroll_taxes": [
+#             { "federal_income_tax": 12 },
+#             { "social_security_tax": 18 },
+#             { "medicare_tax": 5 },
+#             { "state_tax": 5 },
+#             { "local_tax": 10 }
+#           ],
+#           "payroll_deductions": {
+#             "medical_insurance": 400
+#           },
+#           "no_of_student_default_loan": 2,
+#           "support_second_family": "Yes",
+#           "arrears_greater_than_12_weeks": "Yes",
+#           "age": 43,
+#           "is_blind": True,
+#           "is_spouse_blind": True,
+#           "spouse_age": 38,
+#           "garnishment_data": [
+#               {" type": "child_support",
+#               "data":[
+       
+#                   { "amount": 190, "arrear": 0 ,"case_id":101}
+#                 ]
+#             }
+#           ]}
     
-# tcsa = ChildSupport().get_list_supportAmt(record)
-# result = MultipleChild().calculate(record) if len(tcsa) > 1 else ChildSupport().calculate(record)
 
+# record= {
+#           "ee_id": "EE005665",
+#           "gross_pay": 950,
+#           "state": "Florida",
+#           "pay_period": "Weekly",
+#           "no_of_exception_for_self": 2,
+#           "filing_status": "head_of_household",
+#           "net_pay": 732.3,
+#           "payroll_taxes": [
+#             {
+#               "federal_income_tax": 95
+#             },
+#             {
+#               "social_security_tax": 58.9
+#             },
+#             {
+#               "medicare_tax": 13.8
+#             },
+#             {
+#               "state_tax": 0
+#             },
+#             {
+#               "local_tax": 0
+#             }
+#           ],
+#           "payroll_deductions": {
+#             "medical_insurance": 50
+#           },
+#           "age": 50,
+#           "is_blind": False,
+#           "is_spouse_blind": False,
+#           "spouse_age": 21,
+#           "support_second_family": "No",
+#           "arrears_greater_than_12_weeks": "Yes",
+#           "garnishment_data": [
+#             {
+#               "type": "child support",
+#               "data": [
+#                 {
+#                   "amount": 100,
+#                   "arrear": 0,
+#                   "case_id": "C81426"
+#                 }
+#               ]
+#             }
+#           ]
+#         }
+
+# tcsa = ChildSupport().get_list_supportAmt(record)
+# # print("11111rrr",ChildSupport().calculate_de_rule(record))
+# print("result",MultipleChild().calculate(record) if len(tcsa) > 1 else SingleChild().calculate(record))
+
+# print("11111ddd",ChildSupport().calculate_de(record))

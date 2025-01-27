@@ -124,4 +124,4 @@ class APICallCountSerializer(serializers.Serializer):
 class company_details_serializer(serializers.ModelSerializer):
     class Meta:
         model = company_details
-        fields = ["co_id","ein","company_name","zipcode","state","DBA_name","bank_name","bank_account_name","location"]
+        fields = '__all__' 
