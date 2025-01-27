@@ -466,8 +466,7 @@ def get_employee_by_employer_id(request, cid):
     else:
         return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
-<<<<<<< HEAD
-=======
+
 @api_view(['GET'])
 def get_single_employee_details(request, cid,ee_id):
     employees=Employee_Detail.objects.filter(cid=cid,ee_id=ee_id)
@@ -485,7 +484,7 @@ def get_single_employee_details(request, cid,ee_id):
     else:
         return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
 
->>>>>>> fbc9a7174d9bc76ff860616bacdfbb8dff47b9ec
+
 #Get Employer Details from employer ID
 @api_view(['GET'])
 def get_employer_details(request, employer_id):
