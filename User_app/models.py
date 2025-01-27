@@ -106,18 +106,23 @@ class payroll(models.Model):
     pay_date= models.DateField()
     gross_pay=models.DecimalField(max_digits=250,decimal_places=2)
     net_pay=models.DecimalField(max_digits=250,decimal_places=2)
-    taxes_federal_income_tax=models.DecimalField(max_digits=250,decimal_places=2)
-    taxes_state_tax=models.DecimalField(max_digits=250,decimal_places=2)
-    taxes_local_tax=models.DecimalField(max_digits=250,decimal_places=2)
-    taxes_medicare_tax=models.DecimalField(max_digits=250,decimal_places=2)
-    taxes_sdi=models.DecimalField(max_digits=250,decimal_places=2)
-    deductions=models.DecimalField(max_digits=250,decimal_places=2)
+    tax_federal_income_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    tax_state_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    tax_local_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    tax_medicare_tax=models.DecimalField(max_digits=250,decimal_places=2)
+    tax_social_security = models.CharField(max_length=255)
+    deduction_sdi=models.DecimalField(max_digits=250,decimal_places=2)
+    deduction_medical_insurance=models.DecimalField(max_digits=250,decimal_places=2)
+    deduction_401k=models.DecimalField(max_digits=250,decimal_places=2)
+    deduction_union_dues=models.DecimalField(max_digits=250,decimal_places=2)
+    deduction_voluntary=models.DecimalField(max_digits=250,decimal_places=2)
     type=models.CharField(max_length=255)
     amount=models.DecimalField(max_digits=250,decimal_places=2)
+    
 
 class garnishment_order(models.Model):
-    cid = models.IntegerField()
-    eeid= models.IntegerField()
+    cid = models.CharField(max_length=254)
+    eeid= models.CharField(max_length=254)
     case_id= models.CharField(max_length=255, null=True, blank=True)
     state= models.CharField(max_length=255)
     type= models.CharField(max_length=255)
@@ -127,9 +132,7 @@ class garnishment_order(models.Model):
     amount= models.DecimalField(max_digits=250,decimal_places=2)
     arrear_greater_than_12_weeks= models.BooleanField(default=False, blank=False)
     arrear_amount= models.DecimalField(max_digits=250,decimal_places=2)
-
-
-    
+   
 # # Employer_Profile details
 # class Employer_Profile(models.Model):
 #     employer_id = models.AutoField(primary_key=True)

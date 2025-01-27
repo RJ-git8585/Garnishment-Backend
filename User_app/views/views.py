@@ -465,6 +465,28 @@ def get_employee_by_employer_id(request, cid):
             return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
     else:
         return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
+    
+
+@api_view(['GET'])
+def get_order_details(request, cid):
+    employees=garnishment_order.objects.filter(cid=cid)
+    if employees.exists():
+        try:
+            serializer = garnishment_order_serializer(employees, many=True)
+            response_data = {
+                    'success': True,
+                    'message': 'Data Get successfully',
+                    'status code': status.HTTP_200_OK}
+            response_data['data'] = serializer.data
+            return JsonResponse(response_data)
+        except Employee_Detail.DoesNotExist:
+            return JsonResponse({'message': 'Data not found', 'status code':status.HTTP_404_NOT_FOUND})
+        except Exception as e:
+            return JsonResponse({'error': str(e), status:status.HTTP_500_INTERNAL_SERVER_ERROR})  
+
+    else:
+        return JsonResponse({'message': 'Employer ID not found', 'status code':status.HTTP_404_NOT_FOUND})
+
 
 
 @api_view(['GET'])

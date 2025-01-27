@@ -37,6 +37,7 @@ urlpatterns = [
     path('GetAllemployerdetail', EmployerProfileList.as_view(), name='employer-profile-list'),
     path('GetAllEmplloyeeDetail', EmployeeDetailsList.as_view(), name='employer-profile-list'),
     path('GetSingleEmployee/<str:cid>/<str:ee_id>/', get_single_employee_details, name='get-single-employee-details'),
+    path('GetOrderDetails/<str:cid>/', get_order_details, name='get_order_details'),
     path('password-reset', PasswordResetRequestView.as_view(), name='password-reset-request'),
     path('password-reset-confirm/<str:token>/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     path('setting/<int:employer_id>/',GETSettingDetails.as_view(), name='Get Setting'),
