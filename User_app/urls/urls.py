@@ -27,7 +27,8 @@ urlpatterns = [
     path('DashboardData',get_dashboard_data, name='iwo_dashboard'),
     path('IWO_Data',insert_iwo_detail, name='iwo_pdf_data'),
     path('Department',DepartmentViewSet, name='Department'),
-    path('Location',LocationViewSet, name='Location'),     
+    path('Location',LocationViewSet, name='Location'),
+    path('ConvertExcelToJson',convert_excel_to_json.as_view(), name='ConvertExcelToJson'),
     path('EmployeeDelete/<str:cid>/<str:ee_id>/',EmployeeDeleteAPIView.as_view(), name='Employee-Delete-APIView'),
     path('GarOrderDelete/<str:case_id>/',GarOrderDeleteAPIView.as_view(), name='Gar-Order-Delete-APIView'),
     path('CompanyDelete/<str:cid>/',CompanyDeleteAPIView.as_view(), name='Company-Delete-APIView'),
@@ -47,6 +48,7 @@ urlpatterns = [
     path('multiple_garnishment_case/',multiple_case_calculation, name='state_tax_case'),
     path('multiple_garnishment_result/<str:employer_id>/<str:employee_id>/',get_multiple_garnishment_case_result.as_view(), name='state_tax_case'),
     #path('ChildSupportBatchResult/<str:batch_id>', ChildSupportGarnishmentBatchResult.as_view(), name='Calculation Data'),
+
     #path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api'),
     #path('upsert-company-details/', upsert_company_details_api, name='upsert_company_details_api'),
     path('upsert-employees-details/', upsert_employees_data_api, name='upsert_employees_data_api '),
@@ -55,6 +57,10 @@ urlpatterns = [
     path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails'),
     #path('upsert-payroll-data/', upsert_payroll_details_api, name='upsert_payroll_details_api'),
     path('upsert-garnishment-data/', upsert_garnishment_order_api, name='upsert_garnishment_order_api'),
+
+
+    path('upsert-employees-details/', upsert_employees_data, name='import_employees_api'),
+    path('upsert-company-details/', upsert_company_details, name='upsert_company_details'),
 
     path('upsert_gar_order/', upsert_garnishment_order, name='upsert_garnishment_order'),
     path('CompanyDetails/', CompanyDetails.as_view(), name='CompanyDetails'),

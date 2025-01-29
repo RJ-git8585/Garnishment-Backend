@@ -30,7 +30,7 @@ class CalculationDataView(APIView):
             if not batch_id:
                 return Response({"error": "batch_id is required"}, status=status.HTTP_400_BAD_REQUEST)
     
-            # Validate rows
+            # Validate cid_data
             if not cid_data:
                 return Response({"error": "No rows provided"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -172,6 +172,6 @@ class CalculationDataView(APIView):
             )
         except Exception as e:
             return Response(
-                {"error": str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
+                {"error": str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,"ee_id":record.get('ee_id')},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

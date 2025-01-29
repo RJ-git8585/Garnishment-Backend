@@ -196,8 +196,8 @@ class SingleChild(ChildSupport):
             # ADE is not sufficient to cover the child support amount
             withholding_amount = ade
             arrear_amount = 0
-        result_amt={"child support amount1":withholding_amount}
-        arrear_amt={"arrear amount1":arrear_amount}
+        result_amt={"child support amount1":round(withholding_amount,2)}
+        arrear_amt={"arrear amount1":round(arrear_amount,2)}
         return result_amt,arrear_amt
 
 class MultipleChild(ChildSupport):
@@ -226,7 +226,7 @@ class MultipleChild(ChildSupport):
             # Apply the allocation method for garnishment
             if allocation_method_for_garnishment == "prorate":
                 child_support_amount = {
-                    f"child support amount{i+1}": (amount / twa) * ade for i, amount in enumerate(tcsa)
+                    f"child support amount{i+1}": round((amount / twa) * ade,2) for i, amount in enumerate(tcsa)
                 }
                 
                 amount_left_for_arrears = wa - sum(tcsa)
@@ -235,7 +235,7 @@ class MultipleChild(ChildSupport):
                     arrear_amount = {f"arrear amount{i+1}": 0 for i, _ in enumerate(taa)}
                 else:
                     if amount_left_for_arrears >=taa:
-                        arrear_amount={f"arrear amount{i+1}": (amount/taa)*amount_left_for_arrears for i, amount in enumerate(taa)}
+                        arrear_amount={f"arrear amount{i+1}": round((amount/taa)*amount_left_for_arrears,2) for i, amount in enumerate(taa)}
                     else:
                         arrear_amount=self.calculate_each_arrears_amt(record)
             
@@ -252,13 +252,44 @@ class MultipleChild(ChildSupport):
                     if amount_left_for_arrears >=taa:
                         arrear_amount=self.calculate_each_arrears_amt(record)                       
                     else:
-                        arrear_amount={f"arrear amount{i+1}": amount/len(taa)+1 for i, amount in enumerate(taa)}
+                        arrear_amount={f"arrear amount{i+1}": round(amount/len(taa)+1,2) for i, amount in enumerate(taa)}
             else:
                 raise ValueError("Invalid allocation method for garnishment.")
 
         return child_support_amount, arrear_amount
     
-
+# record=   {
+#           "ee_id": "EMP002",
+#           "gross_pay": 670,
+#           "state": "Alabama",
+#           "pay_period": "weekly",
+#           "order_id":"DE101",
+          
+#           "payroll_taxes": [
+#             { "federal_income_tax": 12 },
+#             { "social_security_tax": 18 },
+#             { "medicare_tax": 5 },
+#             { "state_tax": 5 },
+#             { "local_tax": 10 }
+#           ],
+#           "payroll_deductions": {
+#             "medical_insurance": 400
+#           },
+#           "no_of_student_default_loan": 2,
+#           "support_second_family": "Yes",
+#           "arrears_greater_than_12_weeks": "Yes",
+#           "age": 43,
+#           "is_blind": True,
+#           "is_spouse_blind": True,
+#           "spouse_age": 38,
+#           "garnishment_data": [
+#               {" type": "child_support",
+#               "data":[
+       
+#                   { "amount": 190, "arrear": 0 ,"case_id":101}
+#                 ]
+#             }
+#           ]}
     
 # record=  {
 #           "ee_id": "EE005256",
