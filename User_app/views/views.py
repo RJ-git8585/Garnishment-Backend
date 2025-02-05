@@ -3403,3 +3403,35 @@ def upsert_company_details(request):
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+#get the employee data with the rules
+import pandas as pd
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from User_app.models import Employee_Detail, garnishment_fees_states_rule
+from ..serializers import EmployeeDetailsSerializer
+
+@api_view(['GET'])
+def get_employees_with_rules(request):
+    """
+    API to fetch Employee_Detail data, match work_state with state in garnishment_fees_states_rule,
+    and return a DataFrame response with an additional 'rule' column.
+    """
+    # Fetch all employees
+    employees = Employee_Detail.objects.all()
+    employee_data = list(employees.values())  # Convert QuerySet to List of Dicts
+
+    # Fetch all garnishment rules
+    rules = garnishment_fees_states_rule.objects.all()
+    rules_data = {rule.state: rule.rule for rule in rules}  # Create a dictionary {state: rule}
+
+    # Convert Employee data to DataFrame
+    df = pd.DataFrame(employee_data)
+
+    # Add 'rule' column based on work_state matching state
+    df['rule'] = df['work_state'].map(rules_data).fillna('No Rule Found')
+
+    # Convert DataFrame to JSON response
+    return Response(df.to_dict(orient='records'), status=status.HTTP_200_OK)
