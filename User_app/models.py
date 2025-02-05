@@ -449,6 +449,17 @@ class multiple_garnishment_case_result(models.Model):
     net_pay = models.FloatField()  
     timestamp = models.DateTimeField(auto_now_add=True)
 
+class garnishment_fees_states_rule(models.Model):
+    state = models.CharField(max_length=255)
+    pay_period = models.CharField(max_length=255)
+    rule = models.CharField(max_length=255)
+
+class garnishment_fees_rules(models.Model):
+    rule = models.CharField(max_length=255)
+    maximum_fee_deduction = models.CharField(max_length=255)
+    per_pay_period=models.DecimalField(max_digits=250,decimal_places=2)
+    per_month = models.DecimalField(max_digits=250,decimal_places=2)
+    per_remittance=models.DecimalField(max_digits=250,decimal_places=2)
 
 
 

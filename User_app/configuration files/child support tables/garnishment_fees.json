@@ -1,0 +1,30 @@
+{
+    "fees": [
+      {"State": "Alabama", "Maximum Fee Deduction": "$2.00 per month", "Pay Period": "Weekly", "Per pay period": 0.5, "Per Month": 2, "Per Remittance": 0.5, "Rule": "Rule 1"},
+      {"State": "Alaska", "Maximum Fee Deduction": "$5.00 per remittance", "Pay Period": "Biweekly", "Per pay period": 0, "Per Month": 0, "Per Remittance": 5, "Rule": "Rule 2"},
+      {"State": "Arizona", "Maximum Fee Deduction": "greater of $1.00 per pay period or $4.00 per month", "Pay Period": "Monthly", "Per pay period": 1, "Per Month": 4, "Per Remittance": 1, "Rule": "Rule 3"},
+      {"State": "Arkansas", "Maximum Fee Deduction": "$2.50 per pay period", "Pay Period": "Semimonthly", "Per pay period": 2.5, "Per Month": 0, "Per Remittance": 2.5, "Rule": "Rule 4"},
+      {"State": "California", "Maximum Fee Deduction": "$1.50 per remittance", "Pay Period": "Weekly", "Per pay period": 1.5, "Per Month": 0, "Per Remittance": 1.5, "Rule": "Rule 5"},
+      {"State": "Colorado", "Maximum Fee Deduction": "$5.00 per month", "Pay Period": "Weekly", "Per pay period": 1.25, "Per Month": 5, "Per Remittance": 1.25, "Rule": "Rule 6"},
+      {"State": "Connecticut", "Maximum Fee Deduction": "no provision", "Pay Period": "Weekly", "Per pay period": 0, "Per Month": 0, "Per Remittance": 0, "Rule": "Rule 7"},
+      {"State": "Delaware", "Maximum Fee Deduction": "no provision", "Pay Period": "Weekly", "Per pay period": 0, "Per Month": 0, "Per Remittance": 0, "Rule": "Rule 7"},
+      {"State": "Florida", "Maximum Fee Deduction": "$5.00 for first deduction; thereafter $2.00 per remittance", "Pay Period": "Weekly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 8"},
+      {"State": "Georgia", "Maximum Fee Deduction": "$25 for the first deduction; thereafter $3.00 per remittance", "Pay Period": "Weekly", "Per pay period": 3, "Per Month": 3, "Per Remittance": 3, "Rule": "Rule 9"},
+      {"State": "Hawaii", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Weekly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Idaho", "Maximum Fee Deduction": "$5.00 per remittance", "Pay Period": "Monthly", "Per pay period": 5, "Per Month": 5, "Per Remittance": 5, "Rule": "Rule 2"},
+      {"State": "Illinois", "Maximum Fee Deduction": "$5.00 per month", "Pay Period": "Monthly", "Per pay period": 1.25, "Per Month": 5, "Per Remittance": 1.25, "Rule": "Rule 6"},
+      {"State": "Indiana", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Weekly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Iowa", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Weekly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Kansas", "Maximum Fee Deduction": "lesser of $5.00 per pay period or $10 per month", "Pay Period": "Weekly", "Per pay period": 5, "Per Month": 10, "Per Remittance": 2.5, "Rule": "Rule 11"},
+      {"State": "Kentucky", "Maximum Fee Deduction": "$1.00 per remittance", "Pay Period": "Biweekly", "Per pay period": 1, "Per Month": 1, "Per Remittance": 1, "Rule": "Rule 12"},
+      {"State": "Louisiana", "Maximum Fee Deduction": "$5.00 per pay period", "Pay Period": "Biweekly", "Per pay period": 5, "Per Month": null, "Per Remittance": 5, "Rule": "Rule 13"},
+      {"State": "Maine", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Monthly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Maryland", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Monthly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Massachusetts", "Maximum Fee Deduction": "$1.00 per remittance", "Pay Period": "Weekly", "Per pay period": 1, "Per Month": 1, "Per Remittance": 1, "Rule": "Rule 12"},
+      {"State": "Michigan", "Maximum Fee Deduction": "Income submitted by electronic means: $1 each payment, but not to exceed $2 per month. Income submitted by other means: $2 each payment, but not to exceed $4 per month", "Pay Period": "Semimonthly", "Per pay period": 2, "Per Month": 4, "Per Remittance": 2, "Rule": "Rule 14"},
+      {"State": "Mississippi", "Maximum Fee Deduction": "$2.00 per remittance", "Pay Period": "Monthly", "Per pay period": 2, "Per Month": 2, "Per Remittance": 2, "Rule": "Rule 10"},
+      {"State": "Missouri", "Maximum Fee Deduction": "$6.00 per month", "Pay Period": "Weekly", "Per pay period": 1.5, "Per Month": 6, "Per Remittance": 1.5, "Rule": "Rule 15"},
+      {"State": "Montana", "Maximum Fee Deduction": "$5.00 per month", "Pay Period": "Weekly", "Per pay period": 1.25, "Per Month": 5, "Per Remittance": 1.25, "Rule": "Rule 6"}
+    ]
+  }
+  

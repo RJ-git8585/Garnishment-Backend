@@ -1,12 +1,12 @@
 from rest_framework import status
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from ..models import *
+import pandas
 import math
-import pandas 
 from User_app.models import *
-from django.contrib.auth import authenticate, login as auth_login ,get_user_model
+from django.contrib.auth import  login as auth_login ,get_user_model
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count
@@ -28,10 +28,10 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from User_app.models import Employee_Detail
 import pandas as pd
-import json
+import os
+from auth_project import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
 from User_app.models import garnishment_order, Employee_Detail, company_details
 
 
@@ -373,7 +373,7 @@ class EmployeeDetailsUpdateAPIView(RetrieveUpdateAPIView):
 class CompanyDetailsUpdateAPIView(RetrieveUpdateAPIView):
     queryset = company_details.objects.all()
     serializer_class = company_details_serializer
-    lookup_fields = ('cid')  # Corrected to a tuple for multiple fields
+    lookup_fields = ('cid')
 
     def get_object(self):
         """
@@ -412,6 +412,52 @@ class CompanyDetailsUpdateAPIView(RetrieveUpdateAPIView):
                 {'error': str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CompanyDetailsUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = company_details.objects.all()
+    serializer_class = company_details_serializer
+    lookup_fields = ('cid')
+
+    def get_object(self):
+        """
+        Overriding `get_object` to fetch the instance based on multiple fields.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {field: self.kwargs[field] for field in self.lookup_fields}
+        obj = queryset.filter(**filter_kwargs).first()
+        if not obj:
+            raise Exception(f"Object not found with {filter_kwargs}")
+        return obj
+
+    def put(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            # Logging the update action
+            LogEntry.objects.create(
+                action='Company details updated',
+                details=f'Company details updated successfully for Employee ID {instance.cid}'
+            )
+
+            # Preparing the response data
+            response_data = {
+                'success': True,
+                'message': 'Data updated successfully',
+                'status_code': status.HTTP_200_OK
+            }
+            return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return JsonResponse(
+                {'error': str(e), "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 
 #PDF upload view
 @transaction.atomic
@@ -793,7 +839,6 @@ class DepartmentDeleteAPIView(DestroyAPIView):
     
 
 # Export employee details into the csv
-# Export employee details into the csv
 @api_view(['GET'])
 def export_employee_data(request, cid):
     try:
@@ -950,6 +995,115 @@ class EmployeeDetailsList(APIView):
             return JsonResponse(response_data)
         except Exception as e:
             return Response({"error": str(e), "status code" :status.HTTP_500_INTERNAL_SERVER_ERROR})
+
+
+
+class GETGarnishmentFeesStatesRule(APIView):
+    def get(self, request, format=None):
+        try:
+            employees = garnishment_fees_states_rule.objects.all()
+            serializer = garnishment_fees_states_rule_serializer(employees, many=True)
+            response_data = {
+                        'success': True,
+                        'message': 'Data Get successfully',
+                        'status code': status.HTTP_200_OK,
+                        'data' : serializer.data}
+            return JsonResponse(response_data)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+class GarFeesRulesUpdateAPIView(APIView):
+    def put(self, request, rule):
+        try:
+            # Get the object to update
+            employees = garnishment_fees_rules.objects.filter(rule=rule)
+            
+            if not employees.exists():
+                return Response(
+                    {
+                        "success": False,
+                        "message": "No records found for the given rule",
+                        "status_code": status.HTTP_404_NOT_FOUND,
+                    }
+                )
+
+            # Use first() to get the single instance
+            serializer = garnishment_fees_rules_serializer(
+                employees.first(), data=request.data, partial=True
+            )
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Data updated successfully",
+                        "status_code": status.HTTP_200_OK
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {"success": False, "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            return Response(
+                {"success": False, "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+
+@api_view(['GET'])
+def GETGarnishmentFeesRules(request,rule):
+    employees=garnishment_fees_rules.objects.filter(rule=rule)
+
+    if employees.exists():
+        try:
+            serializer = garnishment_fees_rules_serializer(employees, many=True)
+            response_data = {
+                        'success': True,
+                        'message': 'Data Get successfully',
+                        'status code': status.HTTP_200_OK,
+                        'data' : serializer.data}
+            return JsonResponse(response_data)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    else:
+        return JsonResponse({'message': 'Rule not found', 'status code':status.HTTP_404_NOT_FOUND})
+
+
+
+
+
+@api_view(['GET'])
+def garnishment_fees_rules_based_on_state(request, state):
+    state = state.lower()
+    employees = garnishment_fees_states_rule.objects.filter(state=state)
+
+    if employees:
+        try:
+            serializer = garnishment_fees_states_rule_serializer(employees, many=True)
+            response_data = {
+                'success': True,
+                'message': 'Data retrieved successfully',
+                'status_code': status.HTTP_200_OK,
+                'data': serializer.data
+            }
+            return JsonResponse(response_data, status=status.HTTP_200_OK, safe=False)
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': 'An error occurred while processing your request',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Rule not found',
+        'status_code': status.HTTP_404_NOT_FOUND
+    }, status=status.HTTP_404_NOT_FOUND)
 
 
 class CompanyDetails(APIView):

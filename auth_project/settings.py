@@ -33,7 +33,6 @@ SECRET_KEY = 'django-insecure-4j-q2^gpu9&%imydt@@vq*h0i#9#(yv0)&q5ewvaftj(eocs2=
 DEBUG = os.environ.get('DEBUG','False')=="False"
 STATIC_URL = '/static/'
 ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['.vercel.app', 'garnishment-backend.vercel.app','http://127.0.0.1:8000/','https://garnishment-backend.render.app']
 
 # Application definition
 
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_rest_passwordreset',
     # 'celery',
+    'pytest',
     # 'django-celery-results',
     'User_app',]
 
@@ -160,12 +160,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL')
     )
 }
+
+
 LANGUAGE_CODE = 'en-us'
 USE_I18N = False
 
@@ -195,6 +196,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization
