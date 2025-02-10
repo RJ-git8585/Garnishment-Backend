@@ -140,6 +140,15 @@ class garnishment_fees_rules_serializer(serializers.ModelSerializer):
     class Meta:
         model = garnishment_fees_rules
         fields = ['id','rule','maximum_fee_deduction','per_pay_period','per_month','per_remittance'] 
+#new
+
+from rest_framework import serializers
+from .models import Employee_Detail
+
+class EmployeeDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee_Detail
+        fields = '__all__'  # Return all fields from Employee_Detail
 
 
 

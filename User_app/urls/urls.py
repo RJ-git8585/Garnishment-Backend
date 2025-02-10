@@ -5,6 +5,7 @@ from django.urls import include, path
 from ..views.view_state_tax import *
 from ..views.view_multiple_garnishment import *
 from ..views.upsert import *
+#from User_app.views import get_employee_details_with_rule
 
 urlpatterns = [
     path('', include('User_app.urls.url_federal_tax')),
@@ -69,7 +70,7 @@ urlpatterns = [
     path('GarnishmentFeesRules/<str:rule>/', GETGarnishmentFeesRules, name='GETGarnishmentFeesRules'),
     path('GarnishmentFeesRulesUpdate/<str:rule>/', GarFeesRulesUpdateAPIView.as_view(), name='GETGarnishmentFeesRules'),
     path('GarnishmentFeesRulesBasedOnState/<str:state>/', garnishment_fees_rules_based_on_state, name='GarnishmentFeesRulesBasedOnState'),
-    path('employees-with-rules/', get_employees_with_rules, name='employees_with_rules')
+    path('employee-details/', get_employees_with_rules, name='get_employee_details_with_rule')
     
     
 

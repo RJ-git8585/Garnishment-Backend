@@ -3411,27 +3411,35 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from User_app.models import Employee_Detail, garnishment_fees_states_rule
-from ..serializers import EmployeeDetailsSerializer
-
+from User_app.serializers import EmployeeDetailSerializer
 @api_view(['GET'])
 def get_employees_with_rules(request):
     """
     API to fetch Employee_Detail data, match work_state with state in garnishment_fees_states_rule,
-    and return a DataFrame response with an additional 'rule' column.
+    and return a structured JSON response with an additional 'rule' column.
     """
-    # Fetch all employees
+    # Fetch employees
     employees = Employee_Detail.objects.all()
-    employee_data = list(employees.values())  # Convert QuerySet to List of Dicts
+    employee_data = EmployeeDetailSerializer(employees, many=True).data
 
-    # Fetch all garnishment rules
+    # Fetch rules and create a mapping dictionary
     rules = garnishment_fees_states_rule.objects.all()
-    rules_data = {rule.state: rule.rule for rule in rules}  # Create a dictionary {state: rule}
+    rules_data = {rule.state.strip().lower(): rule.rule for rule in rules}
 
-    # Convert Employee data to DataFrame
+    # Convert employee data into a DataFrame
     df = pd.DataFrame(employee_data)
+    print("df",df)
+    
+    if 'work_state' in df.columns:
+        df['work_state_cleaned'] = df['work_state'].str.strip().str.lower()
+        df['rule'] = df['work_state_cleaned'].map(rules_data).fillna('No Rule Found')
+        df.drop(columns=['work_state_cleaned'], inplace=True)
+    else:
+        df['rule'] = 'No Rule Found'
 
-    # Add 'rule' column based on work_state matching state
-    df['rule'] = df['work_state'].map(rules_data).fillna('No Rule Found')
-
-    # Convert DataFrame to JSON response
-    return Response(df.to_dict(orient='records'), status=status.HTTP_200_OK)
+    # Convert DataFrame to JSON respo`nse
+    response_data = df.to_dict(orient='records')
+    json_data = df.to_json(orient='records')
+    print("json_data",json_data)
+    
+    return JsonResponse({'data': json_data}, status=status.HTTP_200_OK)
