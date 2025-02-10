@@ -246,36 +246,6 @@ class EmployeeDetailsAPIView(APIView):
             )
 
 
-@csrf_exempt
-def TaxDetails(request):
-    if request.method == 'POST' :
-        try:
-            data = json.loads(request.body)
-            required_fields = ['state_tax','employer_id','fedral_income_tax','social_and_security','medicare_tax']
-            missing_fields = [field for field in required_fields if field not in data or not data[field]]
-            
-            if missing_fields:
-                return JsonResponse({'error': f'Required fields are missing: {", ".join(missing_fields)}', 'status code':status.HTTP_400_BAD_REQUEST})
-            
-            user=Tax_details.objects.create(**data)
-            user.save()
-            # employee = get_object_or_404(Tax_details, tax_id=user.tax_id)
-            LogEntry.objects.create(
-                action='Tax details added',
-                details=f'Tax details added successfully for tax ID {user.tax_id}'
-            )
-            return JsonResponse({'message': 'Tax Details Successfully Registered', 'status code':status.HTTP_200_OK})
-        
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format','status code':status.HTTP_400_BAD_REQUEST})
-        
-        except Exception as e:
-            return JsonResponse({'error': str(e), "status code" :status.HTTP_500_INTERNAL_SERVER_ERROR})
-    else:
-        return JsonResponse({'message': 'Please use POST method ', 'status code':status.HTTP_400_BAD_REQUEST})
-
-
-
 
 
 #for Updating the Employer Profile data
@@ -684,49 +654,6 @@ def get_dashboard_data(request):
     return JsonResponse(response_data)
 
 
-@csrf_exempt
-def DepartmentViewSet(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            required_fields = ['department_name', 'employer_id']
-            missing_fields = [field for field in required_fields if field not in data or not data[field]]
-            if missing_fields:
-                return JsonResponse({'error': f'Required fields are missing: {", ".join(missing_fields)}','status_code':status.HTTP_400_BAD_REQUEST})
-            if Department.objects.filter(department_name=data['department_name']).exists():
-                 return JsonResponse({'error': 'Department already exists', 'status_code':status.HTTP_400_BAD_REQUEST})            
-            user = Department.objects.create(**data)
-            LogEntry.objects.create(
-            action='Department details added',
-            details=f'Department details added successfully for Department ID{user.department_id}'
-            ) 
-            return JsonResponse({'message': 'Department Details Successfully Registered'}, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return JsonResponse({'error': str(e), "status code":status.HTTP_500_INTERNAL_SERVER_ERROR}) 
-    else:
-        return JsonResponse({'message': 'Please use POST method','status code':status.HTTP_400_BAD_REQUEST})
-
-
-@csrf_exempt
-def LocationViewSet(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            required_fields = ['employer_id','state','city']
-            missing_fields = [field for field in required_fields if field not in data or not data[field]]
-            if missing_fields:
-                return JsonResponse({'error': f'Required fields are missing: {", ".join(missing_fields)}','status_code':status.HTTP_400_BAD_REQUEST})
-            user = Location.objects.create(**data)
-            LogEntry.objects.create(
-            action='Location details added',
-            details=f'Location details added successfully for Location ID{user.location_id}'
-            ) 
-            return JsonResponse({'message': 'Location Details Successfully Registered', "status code" :status.HTTP_201_CREATED})
-        except Exception as e:
-            return JsonResponse({'error': str(e), "status code" :status.HTTP_500_INTERNAL_SERVER_ERROR}) 
-    else:
-        return JsonResponse({'message': 'Please use POST method','status code':status.HTTP_400_BAD_REQUEST})
-    
 
 
 # For  Deleting the Employee Details
@@ -811,32 +738,6 @@ class GarOrderDeleteAPIView(DestroyAPIView):
         return JsonResponse(response_data)
     
 
-
-# For Deleting the Department Details
-@method_decorator(csrf_exempt, name='dispatch')
-class DepartmentDeleteAPIView(DestroyAPIView):
-    queryset = Department.objects.all()
-    lookup_field = 'department_id' 
-
-    def get_object(self):
-        department_id = self.kwargs.get('department_id')
-        employer_id = self.kwargs.get('employer_id')  
-        return self.queryset.filter(department_id=department_id, employer_id=employer_id).first()  
-    
-    @csrf_exempt
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        LogEntry.objects.create(
-        action='Department details Deleted',
-        details=f'Department details Deleted successfully with ID {instance.department_id} and Employer ID {instance.employer_id}'
-            ) 
-        response_data = {
-                'success': True,
-                'message': 'Department Data Deleted successfully',
-                'status code': status.HTTP_200_OK}
-        return JsonResponse(response_data)
-    
 
 # Export employee details into the csv
 @api_view(['GET'])
@@ -1364,6 +1265,77 @@ class APICallCountView(APIView):
     def get(self, request):
         logs = APICallLog.objects.values('date', 'endpoint', 'count')
         return Response(logs)
+
+    def get(self,request):
+        record={
+                "ee_id": "EE005114",
+                "gross_pay": 1000.0,
+                "state": "alaska",
+                "no_of_exemption_for_self": 2,
+                "pay_period": "Weekly",
+                "filing_status": "single_filing_status",
+                "net_pay": 858.8,
+                "payroll_taxes": [
+                    {
+                        "federal_income_tax": 80.0
+                    },
+                    {
+                        "social_security_tax": 49.6
+                    },
+                    {
+                        "medicare_tax": 11.6
+                    },
+                    {
+                        "state_tax": 0.0
+                    },
+                    {
+                        "local_tax": 0.0
+                    }
+                ],
+                "payroll_deductions": {
+                    "medical_insurance": 0.0
+                },
+                "age": 50,
+                "is_blind": True,
+                "is_spouse_blind": True,
+                "spouse_age": 39,
+                "support_second_family": "Yes",
+                "no_of_student_default_loan": 2,
+                "arrears_greater_than_12_weeks": "No",
+                "garnishment_data": [
+                    {
+                        "type": "child_support",
+                        "data": [
+                            {
+                                "case_id": "C13278",
+                                "amount": 200.0,
+                                "arrear": 0
+                            }
+                        ]
+                    }
+                ]
+            }
+
+        state=record.get("state").lower()
+        gar_type = record.get("garnishment_data")[0]
+        type=gar_type.get('type').lower()
+        pay_period=record.get('pay_period').lower()
+        print("State:", state)
+        print("Garnishment Type:", type)
+        print("Pay Period:", pay_period)
+        data = garnishment_fees.objects.all()
+        serializer = garnishment_fees_serializer(data, many=True)
+
+        for item in serializer.data:
+            if (item["state"].strip().lower() == state.strip().lower() and
+                item["pay_period"].strip().lower() == pay_period.strip().lower() and
+                item["type"].strip().lower() == type.strip().lower()):
+                return Response(item["amount"])
+
+        
+        # print("data",data)
+
+        # return Response({"data":data})
 
 
 # @csrf_exempt
@@ -3405,6 +3377,7 @@ def upsert_company_details(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+
 #get the employee data with the rules
 import pandas as pd
 from rest_framework.response import Response
@@ -3480,3 +3453,4 @@ class Employeegarnishment_orderMatch(APIView):
         response_data = merged_df.to_dict(orient='records')
 
         return Response(response_data, status=status.HTTP_200_OK)
+

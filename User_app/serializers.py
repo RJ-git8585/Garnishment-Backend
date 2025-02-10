@@ -129,6 +129,11 @@ class company_details_serializer(serializers.ModelSerializer):
         model = company_details
         fields = '__all__' 
 
+class garnishment_fees_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = garnishment_fees
+        fields = '__all__' 
+
 
 class garnishment_fees_states_rule_serializer(serializers.ModelSerializer):
     class Meta:

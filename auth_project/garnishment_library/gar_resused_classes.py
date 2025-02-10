@@ -116,20 +116,31 @@ class WLIdentifier:
         
         return f"No matching WL found for this employee: {employee_id}"
 
+class GarnishmentFeesIdentifier:
+    @staticmethod
+    def calculate(record):
+        state = record.get("state", "").lower()
+        pay_period = record.get("pay_period")
 
-# class ChangeResultStructure:
-#     def __init__(self,result,case_id,garnishment_type):
-#         self.result=result
-#         self.case_id=case_id
-#         self.garnishment_type=garnishment_type
-#         pass
-#     def structurechange(self):
-#         garnishment={}
-#         if len(self.result)>1:
-#             for i in range(len(self.result)):
-#                 garnishment[f"withholding_amt_SL{i+1}"] =self.result[i]
-            
+        gar_type = record.get("garnishment_data")[0]
+        garnishment_type = gar_type.get('type', '').replace('_', ' ').title() 
 
+        file_path = os.path.join(settings.BASE_DIR, 'User_app', 'configuration files/child support tables/garnishment_fees.json')
 
+        with open(file_path, 'r') as file:
+            data = json.load(file) 
 
-#             garnishment
+        # Search for matching rule
+        for rule in data.get("fees", []):
+            if (
+                rule.get("State", "").lower() == state
+                and rule.get("Type") == garnishment_type
+                and rule.get("Pay Period") == pay_period
+            ):
+                return rule.get("Amount")
+        
+        return None
+                
+
+    
+
