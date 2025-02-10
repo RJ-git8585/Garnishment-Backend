@@ -5,6 +5,8 @@ from django.urls import include, path
 from ..views.view_state_tax import *
 from ..views.view_multiple_garnishment import *
 from ..views.upsert import *
+
+
 #from User_app.views import get_employee_details_with_rule
 
 urlpatterns = [
@@ -62,6 +64,7 @@ urlpatterns = [
 
     path('upsert-employees-details/', upsert_employees_data, name='import_employees_api'),
     path('upsert-company-details/', upsert_company_details, name='upsert_company_details'),
+    #path('upsert-payroll-data/', upsert_payroll_data, name='upsert-payroll-data'),
 
     path('upsert_gar_order/', upsert_garnishment_order, name='upsert_garnishment_order'),
     path('Company_Details/', CompanyDetails.as_view(), name='CompanyDetails'),
@@ -70,7 +73,8 @@ urlpatterns = [
     path('GarnishmentFeesRules/<str:rule>/', GETGarnishmentFeesRules, name='GETGarnishmentFeesRules'),
     path('GarnishmentFeesRulesUpdate/<str:rule>/', GarFeesRulesUpdateAPIView.as_view(), name='GETGarnishmentFeesRules'),
     path('GarnishmentFeesRulesBasedOnState/<str:state>/', garnishment_fees_rules_based_on_state, name='GarnishmentFeesRulesBasedOnState'),
-    path('employee-details/', get_employees_with_rules, name='get_employee_details_with_rule')
+    path('employee-details/', get_employees_with_rules, name='get_employee_details_with_rule'),
+    path('api/employee-payroll-match/', Employeegarnishment_orderMatch.as_view(), name='employee-payroll-match')
     
     
 

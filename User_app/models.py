@@ -476,6 +476,12 @@ class company_details(models.Model):
     location = models.CharField(max_length=255, null=True, blank=True)
 
 
+# class garnishment_fees(models.Model):
+#     state= models.CharField(max_length=255)
+#     type= models.CharField(max_length=255)
+#     pay_period= models.CharField(max_length=255)
+#     amount= models.DecimalField()
+
     
 
 #garnishment_order_table

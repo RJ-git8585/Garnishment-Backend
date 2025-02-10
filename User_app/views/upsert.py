@@ -4,7 +4,7 @@ from User_app.models import payroll
 from django.core.files.storage import default_storage
 import csv
 import pandas as pd
-
+from ..models import *
 
 #UPSERT EMPLOYEE CODE___START
  
@@ -1107,26 +1107,96 @@ def upsert_garnishment_order_api(request):
 
 
 #.................................................................
-# # class payroll(models.Model):
-# #     cid= models.CharField(max_length=255)
-#     eeid= models.CharField(max_length=255)
-#     payroll_date=models.DateField()
-#     pay_date= models.DateField()
-#     gross_pay=models.DecimalField(max_digits=250,decimal_places=2)
-#     net_pay=models.DecimalField(max_digits=250,decimal_places=2)
-#     tax_federal_income_tax=models.DecimalField(max_digits=250,decimal_places=2)
-#     tax_state_tax=models.DecimalField(max_digits=250,decimal_places=2)
-#     tax_local_tax=models.DecimalField(max_digits=250,decimal_places=2)
-#     tax_medicare_tax=models.DecimalField(max_digits=250,decimal_places=2)
-#     tax_social_security = models.CharField(max_length=255)
-#     deduction_sdi=models.DecimalField(max_digits=250,decimal_places=2)
-#     deduction_medical_insurance=models.DecimalField(max_digits=250,decimal_places=2)
-#     deduction_401k=models.DecimalField(max_digits=250,decimal_places=2)
-#     deduction_union_dues=models.DecimalField(max_digits=250,decimal_places=2)
-#     deduction_voluntary=models.DecimalField(max_digits=250,decimal_places=2)
-#     type=models.CharField(max_length=255)
-#     amount=models.DecimalField(max_digits=250,decimal_places=2)
+# import openpyxl
+# from ..serializers import PayrollSerializer
 
-#     [amount, type,deduction_voluntary, deduction_union_dues, deduction_medical_insurance, deduction_401k, deduction_sdi, tax_social_security,
-#     gross_pay,pay_date, payroll_date, pay_date, eeid, cid,
-#      tax_medicare_tax, tax_local_tax,  tax_state_tax,  tax_federal_income_tax, net_pay  ]
+# @csrf_exempt
+# def upsert_payroll_data(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         print("called")
+#         file = request.FILES['file']
+#         updated_payrolls = []
+#         added_payrolls = []
+
+#         try:
+#             if file.name.endswith('.csv'):
+#                 data = list(csv.DictReader(file.read().decode('utf-8').splitlines()))
+#             elif file.name.endswith(('.xls', '.xlsx')):
+#                 df = pd.read_excel(file)
+#                 data = df.to_dict(orient='records')  
+#             else:
+#                 return JsonResponse({'error': 'Unsupported file format. Please upload a CSV or Excel file.'}, status=400)
+
+#             for row in data:
+#                 row = {k: v for k, v in row.items() if k and not k.startswith('Unnamed:')}
+#                 updated_row = {}
+
+#                 for k, v in row.items():
+#                     if isinstance(v, float) and math.isnan(v):
+#                         updated_row[k] = None
+#                     else:
+#                         updated_row[k] = v
+
+#                 try:
+#                     payroll_record = payroll.objects.get(cid=updated_row['cid'], eeid=updated_row['eeid'], payroll_date=updated_row['payroll_date'])
+#                     has_changes = False
+                    
+#                     for field_name in ['pay_date', 'gross_pay', 'net_pay', 'tax_federal_income_tax', 'tax_state_tax', 'tax_local_tax',
+#                                        'tax_medicare_tax', 'tax_social_security', 'deduction_sdi', 'deduction_medical_insurance',
+#                                        'deduction_401k', 'deduction_union_dues', 'deduction_voluntary', 'type', 'amount']:
+#                         incoming_value = updated_row.get(field_name)
+#                         if getattr(payroll_record, field_name) != incoming_value:
+#                             has_changes = True
+#                             break
+                    
+#                     if has_changes:
+#                         for field_name in ['pay_date', 'gross_pay', 'net_pay', 'tax_federal_income_tax', 'tax_state_tax', 'tax_local_tax',
+#                                            'tax_medicare_tax', 'tax_social_security', 'deduction_sdi', 'deduction_medical_insurance',
+#                                            'deduction_401k', 'deduction_union_dues', 'deduction_voluntary', 'type', 'amount']:
+#                             setattr(payroll_record, field_name, updated_row.get(field_name))
+#                         payroll_record.save()
+#                         updated_payrolls.append(updated_row['eeid'])
+#                 except payroll.DoesNotExist:
+#                     payroll.objects.create(
+#                         cid=updated_row['cid'],
+#                         eeid=updated_row['eeid'],
+#                         payroll_date=updated_row['payroll_date'],
+#                         pay_date=updated_row.get('pay_date'),
+#                         gross_pay=updated_row.get('gross_pay'),
+#                         net_pay=updated_row.get('net_pay'),
+#                         tax_federal_income_tax=updated_row.get('tax_federal_income_tax'),
+#                         tax_state_tax=updated_row.get('tax_state_tax'),
+#                         tax_local_tax=updated_row.get('tax_local_tax'),
+#                         tax_medicare_tax=updated_row.get('tax_medicare_tax'),
+#                         tax_social_security=updated_row.get('tax_social_security'),
+#                         deduction_sdi=updated_row.get('deduction_sdi'),
+#                         deduction_medical_insurance=updated_row.get('deduction_medical_insurance'),
+#                         deduction_401k=updated_row.get('deduction_401k'),
+#                         deduction_union_dues=updated_row.get('deduction_union_dues'),
+#                         deduction_voluntary=updated_row.get('deduction_voluntary'),
+#                         type=updated_row.get('type'),
+#                         amount=updated_row.get('amount')
+#                     )
+#                     added_payrolls.append(updated_row['eeid'])
+
+#             if not updated_payrolls and not added_payrolls:
+#                 return JsonResponse({'message': 'No data was updated or inserted.'}, status=200)
+
+#             response_data = []
+#             if added_payrolls:
+#                 response_data.append({
+#                     'message': 'Payroll records imported successfully',
+#                     'added_payrolls': added_payrolls
+#                 })
+#             if updated_payrolls:
+#                 response_data.append({
+#                     'message': 'Payroll records updated successfully',
+#                     'updated_payrolls': updated_payrolls
+#                 })
+
+#             return JsonResponse({'responses': response_data}, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
+
+#     return JsonResponse({'error': 'Invalid request'}, status=400)

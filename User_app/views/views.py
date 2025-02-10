@@ -3443,3 +3443,40 @@ def get_employees_with_rules(request):
     print("json_data",json_data)
     
     return JsonResponse({'data': json_data}, status=status.HTTP_200_OK)
+
+"""to get the type from payroll and next to match the pay_period, state,type from employee to garnishment fees
+where all three matches took the rule value """
+
+
+from ..serializers import EmployeeDetailSerializer
+from rest_framework import status
+from ..models import Employee_Detail, garnishment_order
+
+class Employeegarnishment_orderMatch(APIView):
+    """
+    API to match Employee_Detail with Payroll based on ee_id and return structured data.
+    """
+    def get(self, request):
+       
+        employees = Employee_Detail.objects.all()
+        garnishment = garnishment_order.objects.all()
+
+        if not employees.exists() or not garnishment.exists():
+            return Response({"message": "No data available"}, status=status.HTTP_204_NO_CONTENT)
+
+       
+        df_employees = pd.DataFrame(list(employees.values()))
+        df_garnishment = pd.DataFrame(list(garnishment.values()))
+
+       
+        if df_employees.empty or df_garnishment.empty:
+            return Response({"message": "No matching data found"}, status=status.HTTP_204_NO_CONTENT)
+
+        
+        merged_df = df_employees.merge(df_garnishment[['eeid', 'type']], left_on='ee_id', right_on='eeid', how='left')
+
+      
+        merged_df.drop(columns=['eeid'], inplace=True)
+        response_data = merged_df.to_dict(orient='records')
+
+        return Response(response_data, status=status.HTTP_200_OK)

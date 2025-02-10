@@ -145,10 +145,15 @@ class garnishment_fees_rules_serializer(serializers.ModelSerializer):
 from rest_framework import serializers
 from .models import Employee_Detail
 
+#made for returning the type and rule.
 class EmployeeDetailSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(read_only=True)  # Adding the 'type' field dynamically
+
     class Meta:
         model = Employee_Detail
-        fields = '__all__'  # Return all fields from Employee_Detail
+        fields = '__all__' 
 
-
-
+# class PayrollSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = payroll
+#         fields = '__all__' 
